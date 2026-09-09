@@ -1,37 +1,63 @@
 ---
+/*
+ * The header, and the services navigation.
+ *
+ * The three service groups are top-level tabs rather than one Services tab
+ * that hides them. The split is what the grouping communicates, so a visitor
+ * sees that there are workshops without hovering anything.
+ *
+ * The tabs carry the short name and the panel carries the full one: the real
+ * group labels do not fit a header bar beside About, Contact and the language
+ * switcher, and a navigation that wraps to two lines is worse than one that
+ * abbreviates.
+ *
+ * Each panel is full bleed and flush with the header's own hairline rather
+ * than a floating card, and leads with the group's description. A menu that
+ * explains the grouping is worth more than one that only lists it.
+ *
+ * The panels open on hover and on focus-within, so they need no JavaScript and
+ * stay reachable from the keyboard.
+ */
+import { getCollection } from 'astro:content';
 import MarkLockup from '~/components/marks/MarkLockup.astro';
-import { getHomeHref, type Locale } from '~/i18n';
-
-interface NavLink {
-  href: string;
-  label: string;
-}
+import { getAboutLinks, getHomeHref, getNavGroups, t, type Locale } from '~/i18n';
+import { isWorkshop, workshopHref } from '~/data/workshops';
+import { hasServiceDetail, serviceDetailHref } from '~/data/service-details';
 
 interface Props {
   lang: Locale;
-  // Empty while the site is a placeholder. Populate once real pages exist:
-  // the markup below already handles it.
-  navLinks?: NavLink[];
 }
 
-const { lang, navLinks = [] } = Astro.props;
+const { lang } = Astro.props;
+const strings = t(lang);
 const homeHref = getHomeHref(lang);
+const groups = getNavGroups(lang);
+const aboutLinks = getAboutLinks(lang);
+
+const entries = await getCollection('services', (e) => e.data.lang === lang);
+
+/** The detail page a service links to, or nothing where it has none. */
+function hrefFor(track: string): string | undefined {
+  const entry = entries.find((e) => e.data.track === track);
+  if (!entry) return undefined;
+  if (isWorkshop(entry)) return workshopHref(entry);
+  return hasServiceDetail(entry) ? serviceDetailHref(entry) : undefined;
+}
+
+function titleFor(track: string): string {
+  return entries.find((e) => e.data.track === track)?.data.title.replace(/\n/g, ' ') ?? track;
+}
+
+const panels = groups.map((group) => ({
+  ...group,
+  streams: group.streams.map((stream) => ({
+    key: stream.key,
+    label: strings.serviceStreams[stream.key],
+    items: stream.tracks.map((track) => ({ track, title: titleFor(track), href: hrefFor(track) })),
+  })),
+}));
 ---
 
-<!--
-  The header mark is the full lockup, globe included, so the two logos on the
-  screen are the same object. That is a deliberate departure from the handoff's
-  one-accent-event-per-screen rule (§6): the identity is the doubling, and a
-  header that drops half of it reads as a different logo.
-
-  The mark is the real one, all sixty strands, and the wordmark is set at 30px
-  so that it can be. The globe is 0.948 of the type, so 30px is what puts it at
-  28px, which is the size the strands start reading at. At the 20px this header
-  used to be, the globe was 19px and the only options were a soft pink disc or a
-  coarse eight-strand scribble, neither of which is the logo.
-
-  Hairline, not shadow, separates the header once scrolled.
--->
 <header
   data-site-header
   class="fixed top-0 inset-x-0 z-50 transition-[background-color,backdrop-filter,border-color] duration-300"
@@ -43,17 +69,97 @@ const homeHref = getHomeHref(lang);
       <MarkLockup class="text-[1.875rem]" variant="full" />
     </a>
 
-    {
-      navLinks.length > 0 && (
-        <nav class="hidden md:flex items-center gap-8" aria-label="Primary">
-          {navLinks.map((link) => (
-            <a href={link.href} class="text-sm text-ink/80 hover:text-ink link-underline">
-              {link.label}
+    <nav class="hidden md:flex items-center gap-7" aria-label="Primary">
+      {
+        panels.map((group) => (
+          <div class="nav-item">
+            <a href={group.href} class="text-sm text-ink/80 hover:text-ink">
+              {group.nav}
             </a>
-          ))}
-        </nav>
-      )
-    }
+            <div class="panel fixed inset-x-0 border-b border-hair bg-paper">
+              <div class="mx-auto max-w-(--container-content) px-6 md:px-10 py-12">
+                <div class="grid gap-x-12 gap-y-8 md:grid-cols-[20rem_1fr]">
+                  <div>
+                    <p class="text-2xl font-semibold tracking-[-0.025em]">{group.label}</p>
+                    <p class="mt-4 max-w-[34ch] text-sm text-grey leading-relaxed">{group.blurb}</p>
+                    <a
+                      href={group.href}
+                      class="mt-6 inline-block text-sm link-underline hover:text-accent-d transition-colors"
+                    >
+                      {strings.nav.allServices}
+                    </a>
+                  </div>
+                  <div
+                    class:list={[
+                      'grid gap-x-10 gap-y-8 content-start',
+                      group.streams.length > 2 ? 'sm:grid-cols-3' : 'sm:grid-cols-2',
+                    ]}
+                  >
+                    {group.streams.map((stream) => (
+                      <div>
+                        {group.streams.length > 1 && (
+                          <p class="lockup text-grey pb-3 mb-3 border-b border-hair">
+                            {stream.label}
+                          </p>
+                        )}
+                        <ul class="space-y-2.5">
+                          {stream.items.map((item) => (
+                            <li>
+                              {item.href ? (
+                                <a
+                                  href={item.href}
+                                  class="block text-base tracking-[-0.01em] text-grey hover:text-ink transition-colors"
+                                >
+                                  {item.title}
+                                </a>
+                              ) : (
+                                <span class="block text-base tracking-[-0.01em] text-grey">
+                                  {item.title}
+                                </span>
+                              )}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))
+      }
+
+      <span class="h-4 w-px bg-hair" aria-hidden="true"></span>
+
+      <div class="nav-item">
+        <a href={aboutLinks[0].href} class="text-sm text-ink/80 hover:text-ink">
+          {strings.nav.about}
+        </a>
+        <div class="panel fixed inset-x-0 border-b border-hair bg-paper">
+          <div class="mx-auto max-w-(--container-content) px-6 md:px-10 py-12">
+            <ul class="flex gap-12">
+              {
+                aboutLinks.map((link) => (
+                  <li>
+                    <a
+                      href={link.href}
+                      class="text-base text-grey hover:text-ink transition-colors"
+                    >
+                      {link.label}
+                    </a>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <a href="#kontakt" class="text-sm text-ink/80 hover:text-ink link-underline">
+        {strings.nav.contact}
+      </a>
+    </nav>
 
     <slot name="language-switcher" />
   </div>
@@ -64,21 +170,51 @@ const homeHref = getHomeHref(lang);
     background-color: transparent;
     border-bottom: 1px solid transparent;
   }
-  header[data-site-header][data-scrolled='true'] {
-    background-color: color-mix(in oklab, var(--color-paper) 88%, transparent);
+  header[data-site-header][data-scrolled='true'],
+  header[data-site-header]:hover,
+  header[data-site-header]:focus-within {
+    background-color: color-mix(in oklab, var(--color-paper) 92%, transparent);
     backdrop-filter: saturate(140%) blur(10px);
     -webkit-backdrop-filter: saturate(140%) blur(10px);
     border-bottom-color: var(--color-hair);
+  }
+
+  /* Flush with the header's hairline, full bleed, no shadow and no radius. */
+  .panel {
+    top: var(--header-h, 4.75rem);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition:
+      opacity 200ms ease-out,
+      transform 200ms ease-out,
+      visibility 200ms;
+  }
+  .nav-item:hover .panel,
+  .nav-item:focus-within .panel {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
   }
 </style>
 
 <script>
   const header = document.querySelector('[data-site-header]');
   if (header) {
-    const update = () => {
-      header.setAttribute('data-scrolled', String(window.scrollY > 40));
-    };
+    const update = () => header.setAttribute('data-scrolled', String(window.scrollY > 40));
     update();
     window.addEventListener('scroll', update, { passive: true });
+
+    /* The sticky group rail sits exactly under the header, and the header's
+       height is set by the lockup rather than by a number anyone wrote down.
+       Measuring beats guessing: a guess a few pixels short shows a sliver of
+       scrolling page between the two. */
+    const measure = () =>
+      document.documentElement.style.setProperty(
+        '--header-h',
+        `${(header as HTMLElement).offsetHeight}px`,
+      );
+    measure();
+    window.addEventListener('resize', measure, { passive: true });
   }
 </script>

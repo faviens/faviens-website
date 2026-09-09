@@ -1,0 +1,64 @@
+---
+/*
+ * `Service` and `BreadcrumbList` for an engagement page.
+ *
+ * The origin is read back from `Astro.site` through `siteOrigin`, never from
+ * `SITE_URL` again: the config has already applied the fallback, and a second
+ * read is a second fallback that drifts from the first.
+ */
+import { siteOrigin } from '~/data/site';
+
+interface Props {
+  name: string;
+  description: string;
+  servicesHref: string;
+  servicesLabel: string;
+  workstreams?: { title: string; description: string }[];
+  outcomes?: string[];
+}
+
+const { name, description, servicesHref, servicesLabel, workstreams, outcomes } = Astro.props;
+
+const SITE = siteOrigin(Astro.site).origin;
+const pageUrl = `${SITE}${Astro.url.pathname}`;
+
+const service = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  '@id': `${pageUrl}#service`,
+  name,
+  description,
+  url: pageUrl,
+  provider: { '@id': `${SITE}/#organization` },
+  serviceType: 'Professional Service',
+  areaServed: { '@type': 'Country', name: 'Switzerland' },
+  hasOfferCatalog:
+    workstreams && workstreams.length > 0
+      ? {
+          '@type': 'OfferCatalog',
+          name,
+          itemListElement: workstreams.map((stream) => ({
+            '@type': 'Offer',
+            itemOffered: {
+              '@type': 'Service',
+              name: stream.title,
+              description: stream.description,
+            },
+          })),
+        }
+      : undefined,
+  ...(outcomes && outcomes.length > 0 ? { serviceOutput: outcomes } : {}),
+};
+
+const breadcrumb = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: servicesLabel, item: `${SITE}${servicesHref}` },
+    { '@type': 'ListItem', position: 2, name, item: pageUrl },
+  ],
+};
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(service)} is:inline />
+<script type="application/ld+json" set:html={JSON.stringify(breadcrumb)} is:inline />

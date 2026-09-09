@@ -45,3 +45,7 @@ TODOS.md
 # archives, and the repository keeps none: the knowledge from them belongs in
 # src/lib/, scripts/assets/ and AGENTS.md, not in a tracked zip.
 notes/
+
+# Stray CVs and similar personal documents dropped in the working directory.
+# They carry private contact details and belong nowhere near a public repo.
+/*.pdf

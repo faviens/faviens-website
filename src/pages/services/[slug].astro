@@ -1,0 +1,45 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import ContactCTA from '~/components/ContactCTA.astro';
+import ServiceDetail from '~/components/ServiceDetail.astro';
+import ServiceSchema from '~/components/ServiceSchema.astro';
+import { CONTACT_EMAIL } from '~/data/company';
+import { hasServiceDetail, serviceDetailSlug } from '~/data/service-details';
+import { groupForTrack } from '~/data/service-groups';
+import { servicesHref, t } from '~/i18n';
+
+const lang = 'de' as const;
+
+export async function getStaticPaths() {
+  const entries = await getCollection(
+    'services',
+    (e) => e.data.lang === 'de' && hasServiceDetail(e),
+  );
+  return entries.map((entry) => ({
+    params: { slug: serviceDetailSlug(entry) },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const strings = t(lang);
+const groupKey = groupForTrack(entry.data.track)?.key;
+const groupLabel = groupKey ? strings.serviceGroups[groupKey].label : '';
+const name = entry.data.title.replace(/\n/g, ' ');
+---
+
+<BaseLayout title={`${name}, Faviens`} description={entry.data.bluf} lang={lang}>
+  <ServiceSchema
+    name={name}
+    description={entry.data.bluf}
+    servicesHref={servicesHref(lang)}
+    servicesLabel={strings.servicePages.services.heading}
+    workstreams={entry.data.workstreams}
+    outcomes={entry.data.outcomes}
+  />
+
+  <ServiceDetail entry={entry} lang={lang} groupLabel={groupLabel} />
+
+  <ContactCTA lang={lang} contactEmail={CONTACT_EMAIL} />
+</BaseLayout>

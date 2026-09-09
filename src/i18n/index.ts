@@ -1,4 +1,5 @@
 import { de } from './de';
+import { SERVICE_GROUPS } from '~/data/service-groups';
 import { en } from './en';
 
 export type Locale = 'de' | 'en';
@@ -54,4 +55,38 @@ export function otherLocalePath(pathname: string, currentLocale: Locale): string
   }
   if (normalized === '/en') return '/';
   return normalized.replace(/^\/en/, '') || '/';
+}
+
+/**
+ * Top-level navigation. The three service groups are tabs of their own rather
+ * than one Services tab that hides them: the split is what the grouping
+ * communicates, so a visitor should see that there are workshops without
+ * hovering anything.
+ */
+export function getNavGroups(locale: Locale) {
+  const s = t(locale);
+  const prefix = locale === 'de' ? '' : '/en';
+  return SERVICE_GROUPS.map((group) => ({
+    key: group.key,
+    href: `${prefix}/services#${group.key}`,
+    nav: s.nav[group.key],
+    label: s.serviceGroups[group.key].label,
+    blurb: s.serviceGroups[group.key].blurb,
+    streams: group.streams,
+  }));
+}
+
+/** The pages grouped under About in the navigation. */
+export function getAboutLinks(locale: Locale) {
+  const s = t(locale);
+  const prefix = locale === 'de' ? '' : '/en';
+  return [
+    { href: `${prefix}/about`, label: s.nav.about },
+    { href: `${prefix}/team`, label: s.nav.team },
+    { href: `${prefix}/careers`, label: s.nav.careers },
+  ];
+}
+
+export function servicesHref(locale: Locale): string {
+  return locale === 'de' ? '/services' : '/en/services';
 }

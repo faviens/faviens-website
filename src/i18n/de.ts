@@ -21,7 +21,6 @@ export interface Strings {
      * it makes possible, then what gets built.
      */
     services: { prefix: string; items: readonly string[] };
-    status: string;
     lead: string;
   };
   cta: {
@@ -35,9 +34,12 @@ export interface Strings {
       description: string;
       heading: string;
       responsibleHeading: string;
+      representativeHeading: string;
       contactHeading: string;
+      /** Country name for the address block. The code lives in `COMPANY`. */
+      country: string;
       registerHeading: string;
-      registerPending: string;
+      registerOffice: string;
       sections: LegalSection[];
     };
     privacy: {
@@ -57,6 +59,79 @@ export interface Strings {
   a11y: {
     skipToContent: string;
   };
+  nav: {
+    strategy: string;
+    systems: string;
+    workshops: string;
+    about: string;
+    team: string;
+    careers: string;
+    contact: string;
+    allServices: string;
+  };
+  serviceGroups: Record<'strategy' | 'systems' | 'workshops', { label: string; blurb: string }>;
+  serviceStreams: Record<
+    'strategy' | 'agentic' | 'data' | 'leadership' | 'ai' | 'foundations',
+    string
+  >;
+  serviceDetail: {
+    eyebrow: string;
+    situation: string;
+    approach: string;
+    deliverable: string;
+    workstreams: string;
+    outcomes: string;
+    frame: string;
+    duration: string;
+    involvement: string;
+    format: string;
+    entryPoint: string;
+  };
+  workshopDetail: {
+    eyebrow: string;
+    takeaways: string;
+    audience: string;
+    format: string;
+    agenda: string;
+    details: string;
+    duration: string;
+    languages: string;
+    locations: string;
+    booking: string;
+    prerequisites: string;
+  };
+  servicePages: {
+    services: { title: string; heading: string; lead: string };
+    about: {
+      title: string;
+      heading: string;
+      lead: string;
+      approachHeading: string;
+      approach: string[];
+      valuesHeading: string;
+      values: { title: string; body: string }[];
+    };
+    team: {
+      title: string;
+      heading: string;
+      lead: string;
+      disciplinesHeading: string;
+      openingLabel: string;
+      openingBody: string;
+      seatLabel: string;
+      portraitLabel: string;
+    };
+    careers: {
+      title: string;
+      heading: string;
+      lead: string;
+      profilesHeading: string;
+      expectationsHeading: string;
+      applyLabel: string;
+      apply: string;
+    };
+  };
+  ctaHeadline: string;
 }
 
 export const de: Strings = {
@@ -72,17 +147,16 @@ export const de: Strings = {
   hero: {
     descriptor: 'Agentic-AI-Beratung · Zürich',
     services: { prefix: 'KI-Agenten', items: ['Upskilling', 'Strategie', 'Umsetzung'] },
-    status: 'Demnächst',
-    lead: 'Faviens ist eine Beratung für agentische KI mit Sitz in Zürich. Der vollständige Auftritt folgt in Kürze.',
+    lead: 'KI, Autonome Agenten & Data Analytics. Cloud oder On-Premises.',
   },
   cta: {
-    eyebrow: 'Kontakt',
+    eyebrow: 'Bereit zu starten?',
   },
   pages: {
     home: {
       title: 'Faviens',
       description:
-        'Beratung für agentische KI in Zürich. Der vollständige Auftritt folgt in Kürze.',
+        'Beratung für agentische KI in Zürich. KI, autonome Agenten und Data Analytics, in der Cloud oder On-Premises.',
     },
     notFound: {
       title: '404, Faviens',
@@ -95,9 +169,11 @@ export const de: Strings = {
       description: 'Impressum und Kontaktangaben von Faviens, Zürich.',
       heading: 'Impressum',
       responsibleHeading: 'Verantwortlich für den Inhalt',
+      representativeHeading: 'Vertreten durch',
       contactHeading: 'Kontakt',
+      country: 'Schweiz',
       registerHeading: 'Handelsregister',
-      registerPending: 'Der Handelsregistereintrag ist in Vorbereitung.',
+      registerOffice: 'Handelsregisteramt des Kantons Zürich',
       sections: [
         {
           heading: 'Haftung für Inhalte',
@@ -129,7 +205,7 @@ export const de: Strings = {
         {
           heading: 'Verantwortliche Stelle',
           body: [
-            'Verantwortlich für die Bearbeitung von Personendaten auf dieser Website ist Faviens, Zürich. Die Kontaktangaben finden Sie im Impressum.',
+            'Verantwortlich für die Bearbeitung von Personendaten auf dieser Website ist die Faviens GmbH, Stäblistrasse 1, 8006 Zürich. Die Kontaktangaben finden Sie im Impressum.',
           ],
         },
         {
@@ -181,4 +257,107 @@ export const de: Strings = {
   a11y: {
     skipToContent: 'Direkt zum Inhalt',
   },
+  nav: {
+    strategy: 'KI-Strategie',
+    systems: 'KI-Systeme',
+    workshops: 'Workshops',
+    about: 'Über uns',
+    team: 'Team',
+    careers: 'Karriere',
+    contact: 'Kontakt',
+    allServices: 'Alle Leistungen',
+  },
+  serviceGroups: {
+    strategy: {
+      label: 'Strategie & Discovery',
+      blurb: 'Sparring-Partner für Strategie, Roadmap und interne Initiativen.',
+    },
+    systems: {
+      label: 'Systeme & Anwendungen',
+      blurb: 'Delivery-Partner für massgeschneiderte Anwendungen, Pipelines und Produkte.',
+    },
+    workshops: {
+      label: 'Workshops & Weiterbildung',
+      blurb: 'Workshop-Partner, der Teams in die richtigen Praktiken einführt.',
+    },
+  },
+  serviceStreams: {
+    strategy: 'Strategie',
+    agentic: 'Agentisch',
+    data: 'Daten & Cloud',
+    leadership: 'Führung',
+    ai: 'KI & Agenten',
+    foundations: 'Daten, Code & Cloud',
+  },
+  serviceDetail: {
+    eyebrow: 'Leistung',
+    situation: 'Ausgangslage',
+    approach: 'Vorgehen',
+    deliverable: 'Ergebnis',
+    workstreams: 'Handlungsfelder',
+    outcomes: 'Was Sie erhalten',
+    frame: 'Rahmen',
+    duration: 'Dauer',
+    involvement: 'Beteiligte',
+    format: 'Format',
+    entryPoint: 'Einstieg',
+  },
+  workshopDetail: {
+    eyebrow: 'Workshop · Auf Anfrage',
+    takeaways: 'Was Sie mitnehmen',
+    audience: 'Für wen',
+    format: 'Format',
+    agenda: 'Ablauf',
+    details: 'Rahmen',
+    duration: 'Dauer',
+    languages: 'Sprachen',
+    locations: 'Orte',
+    booking: 'Buchung',
+    prerequisites: 'Vorwissen',
+  },
+  servicePages: {
+    services: {
+      title: 'Leistungen, Faviens',
+      heading: 'Leistungen',
+      lead: 'Agentische KI-Lösungen, End-to-End-Delivery und Workshops.',
+    },
+    about: {
+      title: 'Über uns, Faviens',
+      heading: 'Über uns',
+      lead: 'Schweizer Beratung für KI · agentische KI · Analytics · Daten.',
+      approachHeading: 'Ansatz',
+      approach: [
+        'Faviens ist ein Schweizer Unternehmen mit Fokus auf datengetriebene und agentische KI-Lösungen. Wir kombinieren saubere Daten-Engineering-Praktiken mit modernen Cloud-Architekturen und liefern messbare Resultate, keine Demos.',
+        'Wir arbeiten in drei Modi: als Delivery-Partner für massgeschneiderte Anwendungen, Pipelines und Produkte, als Sparring-Partner für Strategie, Roadmap und interne Initiativen, oder als Workshop-Partner, der Teams in die richtigen Praktiken einführt.',
+      ],
+      valuesHeading: 'Werte',
+      values: [
+        { title: 'Resultatorientiert', body: 'Wirkung über Aufwand. Was zählt, ist das Ergebnis.' },
+        { title: 'Pragmatisch', body: 'Das Einfachste, das funktioniert.' },
+        { title: 'Robust', body: 'Produktionsreif, ab dem ersten Tag.' },
+        { title: 'Transparent', body: 'Klare Roadmap, klare Kommunikation, klare Übergabe.' },
+      ],
+    },
+    team: {
+      title: 'Team, Faviens',
+      heading: 'Team',
+      lead: 'Die Menschen und die Disziplinen hinter der Arbeit.',
+      disciplinesHeading: 'Disziplinen',
+      openingLabel: 'Kommt dazu',
+      openingBody:
+        'Ein zweiter Platz ist vergeben. Wer ihn einnimmt, steht hier, sobald es so weit ist.',
+      seatLabel: 'Platz zwei',
+      portraitLabel: 'Porträt',
+    },
+    careers: {
+      title: 'Karriere, Faviens',
+      heading: 'Karriere',
+      lead: 'Die Fachprofile, auf denen unsere Leistungen aufbauen. Initiativbewerbungen sind willkommen.',
+      profilesHeading: 'Profile',
+      expectationsHeading: 'Was wir erwarten',
+      applyLabel: 'Bewerbung',
+      apply: 'Schreiben Sie uns, mit dem Profil, das zu Ihnen passt.',
+    },
+  },
+  ctaHeadline: 'Sprechen wir über Ihr Projekt.',
 };

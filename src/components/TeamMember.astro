@@ -1,0 +1,70 @@
+---
+/*
+ * One person, stacked: portrait, name, role, then the bio as hairline rows.
+ *
+ * Stacked rather than portrait-beside-text so that two people can sit side by
+ * side as equals on the page. The frame is capped at 20rem in any column, so
+ * every portrait on the page is drawn at the same size whatever the column
+ * width is.
+ */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  name: string;
+  role: string;
+  photo?: ImageMetadata;
+  linkedin?: string;
+  portraitLabel: string;
+}
+
+const { name, role, photo, linkedin, portraitLabel } = Astro.props;
+---
+
+<div>
+  <div class="w-full max-w-[20rem]">
+    {
+      photo ? (
+        <Image src={photo} alt={name} widths={[320, 640]} sizes="20rem" class="w-full" />
+      ) : (
+        <div class="aspect-square border border-hair flex items-end p-4">
+          <span class="lockup text-grey">{portraitLabel}</span>
+        </div>
+      )
+    }
+  </div>
+
+  <h2 class="mt-8 text-3xl md:text-4xl font-extrabold tracking-[-0.04em] leading-[1.0]">{name}</h2>
+  <p class="mt-3 text-base text-accent-d">{role}</p>
+
+  <div class="mt-8 team-bio">
+    <slot />
+  </div>
+
+  {
+    linkedin && (
+      <a
+        href={linkedin}
+        rel="noopener noreferrer"
+        target="_blank"
+        class="mt-8 inline-block text-sm link-underline hover:text-accent-d transition-colors"
+      >
+        LinkedIn
+      </a>
+    )
+  }
+</div>
+
+<style>
+  /* The bio is authored as a markdown list. Preflight strips the marker, so
+     the rule below turns it into the hairline rows the rest of the site uses
+     rather than leaving it as loose lines. */
+  .team-bio :global(ul) {
+    border-top: 1px solid var(--color-hair);
+  }
+  .team-bio :global(li) {
+    border-bottom: 1px solid var(--color-hair);
+    padding-block: 0.875rem;
+    line-height: 1.6;
+  }
+</style>

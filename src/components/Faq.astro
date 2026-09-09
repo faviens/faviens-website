@@ -1,0 +1,52 @@
+---
+/*
+ * Questions, as native disclosure. Compact, keyboard operable, no JavaScript,
+ * and the answers stay in the HTML, so the structured data below and any
+ * crawler see the same text a reader does.
+ */
+import type { FaqItem } from '~/data/faq';
+
+interface Props {
+  items: FaqItem[];
+  heading: string;
+}
+
+const { items, heading } = Astro.props;
+
+const payload = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: items.map((item) => ({
+    '@type': 'Question',
+    name: item.q,
+    acceptedAnswer: { '@type': 'Answer', text: item.a },
+  })),
+};
+---
+
+{
+  items.length > 0 && (
+    <section class="px-6 md:px-10 pb-24 md:pb-32">
+      <div class="mx-auto max-w-(--container-content)">
+        <p class="lockup text-accent-d">{heading}</p>
+        <div class="mt-8 border-t border-hair max-w-(--container-measure)">
+          {items.map((item) => (
+            <details class="group border-b border-hair py-5">
+              <summary class="flex items-baseline justify-between gap-6 cursor-pointer list-none text-lg md:text-xl font-medium tracking-[-0.015em]">
+                {item.q}
+                <span
+                  class="shrink-0 text-accent-d text-base transition-transform group-open:rotate-45"
+                  aria-hidden="true"
+                >
+                  +
+                </span>
+              </summary>
+              <p class="mt-4 text-base text-grey leading-relaxed">{item.a}</p>
+            </details>
+          ))}
+        </div>
+      </div>
+      <script type="application/ld+json" set:html={JSON.stringify(payload)} is:inline />
+    </section>
+  )
+}

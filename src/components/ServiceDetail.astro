@@ -1,0 +1,200 @@
+---
+/*
+ * An engagement page.
+ *
+ * The spine follows the content schema, which is the predecessor's: the
+ * situation, the approach with its deliverables, the fields of action, what
+ * the client is left with, the frame, and the questions. What is new is the
+ * setting: hung numerals, marquee titles, hairline rows, and no boxes.
+ */
+import type { CollectionEntry } from 'astro:content';
+import { render } from 'astro:content';
+import Faq from '~/components/Faq.astro';
+import { buildServiceFaq, faqHeading } from '~/data/faq';
+import { t, type Locale } from '~/i18n';
+
+interface Props {
+  entry: CollectionEntry<'services'>;
+  lang: Locale;
+  groupLabel: string;
+}
+
+const { entry, lang, groupLabel } = Astro.props;
+const { Content } = await render(entry);
+const s = t(lang).serviceDetail;
+const {
+  title,
+  bluf,
+  situation,
+  approach,
+  workstreams,
+  outcomes,
+  duration,
+  involvement,
+  format,
+  entryPoint,
+} = entry.data;
+
+/* `situation` is authored as prose and may run to several paragraphs. */
+const situationParagraphs = situation?.split(/\n{2,}/).filter(Boolean) ?? [];
+
+const frame = [
+  duration ? { term: s.duration, value: duration } : undefined,
+  entryPoint ? { term: s.entryPoint, value: entryPoint } : undefined,
+].filter((row): row is { term: string; value: string } => Boolean(row));
+
+const faqItems = buildServiceFaq(entry, lang);
+---
+
+<section class="px-6 md:px-10 pt-40 pb-20">
+  <div class="mx-auto max-w-(--container-content)">
+    <p class="lockup text-accent-d">{s.eyebrow} · {groupLabel}</p>
+    <h1
+      class="mt-8 max-w-[14ch] text-5xl md:text-8xl font-extrabold tracking-[-0.045em] leading-[0.92]"
+    >
+      {title.replace(/\n/g, ' ')}
+    </h1>
+    <p class="mt-10 max-w-(--container-measure) text-lg md:text-xl text-grey leading-relaxed">
+      {bluf}
+    </p>
+  </div>
+</section>
+
+<section class="px-6 md:px-10 py-16 md:py-24 border-t border-hair">
+  <div
+    class="mx-auto max-w-(--container-content) max-w-(--container-measure) text-xl md:text-2xl tracking-[-0.02em] leading-snug"
+  >
+    <Content />
+  </div>
+</section>
+
+{
+  situationParagraphs.length > 0 && (
+    <section class="px-6 md:px-10 py-20 md:py-28 border-t border-hair">
+      <div class="mx-auto max-w-(--container-content)">
+        <p class="lockup text-accent-d">{s.situation}</p>
+        <div class="mt-10 space-y-6 max-w-(--container-measure) text-lg text-grey leading-relaxed">
+          {situationParagraphs.map((paragraph) => (
+            <p>{paragraph}</p>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+{
+  approach && approach.length > 0 && (
+    <section class="px-6 md:px-10 py-20 md:py-28 border-t border-hair">
+      <div class="mx-auto max-w-(--container-content)">
+        <p class="lockup text-accent-d">{s.approach}</p>
+        <div class="mt-12">
+          {approach.map((step, i) => (
+            <div class="grid gap-x-8 gap-y-5 md:grid-cols-[6rem_1fr_16rem] items-start border-b border-hair py-10">
+              <span
+                class="hidden md:block text-6xl font-extrabold tracking-[-0.05em] text-t0 leading-none"
+                aria-hidden="true"
+              >
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <div>
+                <h2 class="text-2xl md:text-3xl font-semibold tracking-[-0.025em]">{step.title}</h2>
+                <p class="mt-4 max-w-(--container-measure) text-base text-grey leading-relaxed">
+                  {step.description}
+                </p>
+              </div>
+              {step.deliverable && (
+                <div class="md:pt-2">
+                  <p class="lockup text-grey">{s.deliverable}</p>
+                  <p class="mt-3 text-sm leading-relaxed">{step.deliverable}</p>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+{
+  workstreams && workstreams.length > 0 && (
+    <section class="px-6 md:px-10 py-20 md:py-28 border-t border-hair">
+      <div class="mx-auto max-w-(--container-content)">
+        <p class="lockup text-accent-d">{s.workstreams}</p>
+        <div class="mt-10 grid gap-x-12 gap-y-10 md:grid-cols-2">
+          {workstreams.map((stream) => (
+            <div class="border-t border-hair pt-6">
+              <h2 class="text-xl md:text-2xl font-medium tracking-[-0.02em]">{stream.title}</h2>
+              <p class="mt-3 max-w-[46ch] text-base text-grey leading-relaxed">
+                {stream.description}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+{
+  outcomes && outcomes.length > 0 && (
+    <section class="px-6 md:px-10 py-20 md:py-28 border-t border-hair">
+      <div class="mx-auto max-w-(--container-content)">
+        <p class="lockup text-accent-d">{s.outcomes}</p>
+        <ul class="mt-10 border-t border-hair">
+          {outcomes.map((line, i) => (
+            <li class="grid gap-x-8 md:grid-cols-[4rem_1fr] items-baseline border-b border-hair py-6">
+              <span class="eyebrow text-accent-d" aria-hidden="true">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <span class="max-w-[52ch] text-lg md:text-xl tracking-[-0.015em] leading-snug">
+                {line}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )
+}
+
+{
+  (frame.length > 0 || involvement?.length || format?.length) && (
+    <section class="px-6 md:px-10 py-20 md:py-28 border-t border-hair">
+      <div class="mx-auto max-w-(--container-content)">
+        <p class="lockup text-accent-d">{s.frame}</p>
+        <dl class="mt-10 border-t border-hair">
+          {frame.map((row) => (
+            <div class="grid gap-x-8 md:grid-cols-[10rem_1fr] items-baseline border-b border-hair py-4">
+              <dt class="lockup text-grey">{row.term}</dt>
+              <dd class="max-w-(--container-measure) text-base leading-relaxed">{row.value}</dd>
+            </div>
+          ))}
+          {involvement && involvement.length > 0 && (
+            <div class="grid gap-x-8 md:grid-cols-[10rem_1fr] items-baseline border-b border-hair py-4">
+              <dt class="lockup text-grey">{s.involvement}</dt>
+              <dd class="max-w-(--container-measure) space-y-1 text-base leading-relaxed">
+                {involvement.map((line) => (
+                  <p>{line}</p>
+                ))}
+              </dd>
+            </div>
+          )}
+          {format && format.length > 0 && (
+            <div class="grid gap-x-8 md:grid-cols-[10rem_1fr] items-baseline border-b border-hair py-4">
+              <dt class="lockup text-grey">{s.format}</dt>
+              <dd class="max-w-(--container-measure) space-y-1 text-base leading-relaxed">
+                {format.map((line) => (
+                  <p>{line}</p>
+                ))}
+              </dd>
+            </div>
+          )}
+        </dl>
+      </div>
+    </section>
+  )
+}
+
+<Faq items={faqItems} heading={faqHeading(lang)} />
