@@ -1,0 +1,88 @@
+---
+/*
+ * `Course` for a workshop page, with one `CourseInstance` per city plus one
+ * for remote. The city coordinates come from `src/data/cities.ts` and are what
+ * put a workshop into local search results.
+ */
+import { findCity } from '~/data/cities';
+import { siteOrigin } from '~/data/site';
+
+interface Props {
+  name: string;
+  description: string;
+  teaches?: string[];
+  languages?: string[];
+  locations?: string[];
+  booking?: string;
+  duration?: string;
+}
+
+const { name, description, teaches, languages, locations, booking, duration } = Astro.props;
+
+const SITE = siteOrigin(Astro.site).origin;
+
+const hasRemote = locations?.some((loc) => /remote|online/i.test(loc)) ?? false;
+const onsiteCities = locations?.filter((loc) => !/remote|online/i.test(loc)) ?? [];
+
+const cityInstances = onsiteCities.map((locName) => {
+  const cityData = findCity(locName);
+  return {
+    '@type': 'CourseInstance',
+    courseMode: 'Onsite',
+    location: {
+      '@type': 'Place',
+      name: locName,
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: locName,
+        addressCountry: 'CH',
+      },
+      ...(cityData
+        ? {
+            geo: {
+              '@type': 'GeoCoordinates',
+              latitude: cityData.lat,
+              longitude: cityData.lng,
+            },
+          }
+        : {}),
+    },
+    inLanguage: languages,
+    courseWorkload: duration,
+  };
+});
+
+const remoteInstance = hasRemote
+  ? [
+      {
+        '@type': 'CourseInstance',
+        courseMode: 'Online',
+        inLanguage: languages,
+        courseWorkload: duration,
+      },
+    ]
+  : [];
+
+const course = {
+  '@context': 'https://schema.org',
+  '@type': 'Course',
+  '@id': `${SITE}${Astro.url.pathname}#course`,
+  name,
+  description,
+  provider: { '@id': `${SITE}/#organization` },
+  inLanguage: languages,
+  availableLanguage: languages,
+  teaches,
+  offers: booking
+    ? {
+        '@type': 'Offer',
+        availability: 'https://schema.org/PreOrder',
+        description: booking,
+      }
+    : undefined,
+  hasCourseInstance: [...cityInstances, ...remoteInstance],
+  courseMode: [...(onsiteCities.length > 0 ? ['Onsite'] : []), ...(hasRemote ? ['Online'] : [])],
+};
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(course)} is:inline />

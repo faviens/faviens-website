@@ -1,0 +1,152 @@
+---
+/*
+ * The services page: three groups, each a run of hung-numeral rows, under a
+ * sticky rail. The index at the top is the whole menu on one screen; the rail
+ * keeps the grouping visible once the reader is inside it.
+ */
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import ContactCTA from '~/components/ContactCTA.astro';
+import ServiceRow from '~/components/ServiceRow.astro';
+import { getCollection } from 'astro:content';
+import { getNavGroups, t } from '~/i18n';
+import { CONTACT_EMAIL } from '~/data/company';
+import { isWorkshop, workshopHref } from '~/data/workshops';
+import { hasServiceDetail, serviceDetailHref } from '~/data/service-details';
+
+const lang = 'de' as const;
+const strings = t(lang);
+const page = strings.servicePages.services;
+const groups = getNavGroups(lang);
+
+const entries = await getCollection('services', (e) => e.data.lang === lang);
+/* Keyed as `string`: the track ids in `SERVICE_GROUPS` are structure, not
+   the content schema's literal union, and a Map typed by that union cannot be
+   read with one. */
+const byTrack = new Map<string, (typeof entries)[number]>(
+  entries.map((entry) => [entry.data.track, entry]),
+);
+
+function hrefFor(track: string): string | undefined {
+  const entry = byTrack.get(track);
+  if (!entry) return undefined;
+  if (isWorkshop(entry)) return workshopHref(entry);
+  return hasServiceDetail(entry) ? serviceDetailHref(entry) : undefined;
+}
+---
+
+<BaseLayout title={page.title} description={page.lead} lang={lang}>
+  <section class="px-6 md:px-10 pt-40 pb-24 md:pb-32">
+    <div class="mx-auto max-w-(--container-content)">
+      <p class="lockup text-accent-d">{page.heading}</p>
+      <h1
+        class="mt-8 max-w-[16ch] text-5xl md:text-8xl font-extrabold tracking-[-0.045em] leading-[0.92]"
+      >
+        {page.heading}
+      </h1>
+      <p class="mt-10 max-w-(--container-measure) text-lg md:text-xl text-grey leading-relaxed">
+        {page.lead}
+      </p>
+    </div>
+  </section>
+
+  <section class="px-6 md:px-10 pb-24 md:pb-32" aria-label={strings.nav.allServices}>
+    <div class="mx-auto max-w-(--container-content) border-t border-hair">
+      <div class="grid md:grid-cols-3">
+        {
+          groups.map((group, i) => (
+            <div
+              class:list={[
+                'py-10 md:py-12 md:pr-10',
+                i > 0 && 'border-t border-hair md:border-t-0 md:border-l md:border-hair md:pl-10',
+              ]}
+            >
+              <a href={`#${group.key}`} class="lockup text-accent-d">
+                {group.label}
+              </a>
+              <p class="mt-4 text-sm text-grey leading-relaxed">{group.blurb}</p>
+              {group.streams.map((stream) => (
+                <div class="mt-7">
+                  {group.streams.length > 1 && (
+                    <p class="lockup text-grey mb-3">{strings.serviceStreams[stream.key]}</p>
+                  )}
+                  <ul class="space-y-3">
+                    {stream.tracks.map((track) => (
+                      <li>
+                        <a
+                          href={hrefFor(track) ?? `#service-${track}`}
+                          class="text-lg md:text-xl tracking-[-0.015em] hover:text-accent-d transition-colors"
+                        >
+                          {byTrack.get(track)?.data.title.replace(/\n/g, ' ')}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <div class="sticky z-30 border-y border-hair rail">
+    <nav
+      class="mx-auto max-w-(--container-content) px-6 md:px-10 py-4 flex gap-8 overflow-x-auto"
+      aria-label={page.heading}
+    >
+      {
+        groups.map((group) => (
+          <a href={`#${group.key}`} class="lockup text-grey hover:text-ink whitespace-nowrap">
+            {group.label}
+          </a>
+        ))
+      }
+    </nav>
+  </div>
+
+  {
+    groups.map((group) => (
+      <section id={group.key} class="px-6 md:px-10 pt-24 md:pt-32 scroll-mt-32">
+        <div class="mx-auto max-w-(--container-content)">
+          <div class="border-b border-hair pb-8">
+            <p class="lockup text-accent-d">{group.label}</p>
+            <p class="mt-6 max-w-[24ch] text-3xl md:text-5xl font-semibold tracking-[-0.035em] leading-[1.05]">
+              {group.blurb}
+            </p>
+          </div>
+
+          {group.streams.map((stream) => (
+            <>
+              {group.streams.length > 1 && (
+                <p class="lockup text-grey pt-12 pb-4 border-b border-hair">
+                  {strings.serviceStreams[stream.key]}
+                </p>
+              )}
+              {stream.tracks.map((track) => {
+                const entry = byTrack.get(track);
+                return entry ? <ServiceRow entry={entry} href={hrefFor(track)} /> : null;
+              })}
+            </>
+          ))}
+        </div>
+      </section>
+    ))
+  }
+
+  <div class="pb-24 md:pb-32"></div>
+
+  <ContactCTA lang={lang} contactEmail={CONTACT_EMAIL} />
+</BaseLayout>
+
+<style>
+  /* Under the fixed header, whose height the header script measures. The 1px
+     pulls the rail's own top hairline behind the header's bottom one, so a
+     scrolled page shows one rule between the two and not two. */
+  .rail {
+    top: calc(var(--header-h, 4.75rem) - 1px);
+    background-color: color-mix(in oklab, var(--color-paper) 90%, transparent);
+    backdrop-filter: saturate(140%) blur(10px);
+    -webkit-backdrop-filter: saturate(140%) blur(10px);
+  }
+</style>

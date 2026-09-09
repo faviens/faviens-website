@@ -1,0 +1,38 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import ContactCTA from '~/components/ContactCTA.astro';
+import WorkshopDetail from '~/components/WorkshopDetail.astro';
+import CourseSchema from '~/components/CourseSchema.astro';
+import { isWorkshop, workshopSlug } from '~/data/workshops';
+import { CONTACT_EMAIL } from '~/data/company';
+
+const lang = 'de' as const;
+
+export async function getStaticPaths() {
+  const entries = await getCollection('services', (e) => e.data.lang === 'de' && isWorkshop(e));
+  return entries.map((entry) => ({
+    params: { slug: workshopSlug(entry) },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const name = entry.data.title.replace(/\n/g, ' ');
+---
+
+<BaseLayout title={`${name}, Faviens`} description={entry.data.bluf} lang={lang}>
+  <CourseSchema
+    name={name}
+    description={entry.data.bluf}
+    teaches={entry.data.topics}
+    languages={entry.data.languages}
+    locations={entry.data.locations}
+    booking={entry.data.booking}
+    duration={entry.data.duration}
+  />
+
+  <WorkshopDetail entry={entry} lang={lang} />
+
+  <ContactCTA lang={lang} contactEmail={CONTACT_EMAIL} />
+</BaseLayout>

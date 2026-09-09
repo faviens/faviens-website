@@ -1,7 +1,8 @@
 # Faviens
 
-> Agentic-AI consulting based in Zürich, Switzerland. The full site is in
-> preparation; this domain currently serves a placeholder page.
+> Agentic-AI consulting based in Zürich, Switzerland. Three groups of work:
+> strategy and discovery, systems and applications, workshops and upskilling.
+> Bilingual, German at the root and English under /en.
 
 ## Pronunciation
 
@@ -12,6 +13,51 @@
 
 - [Deutsch](https://faviens.com/)
 - [English](https://faviens.com/en)
+
+## Services
+
+- [Services overview](https://faviens.com/services) · [English](https://faviens.com/en/services)
+
+Strategy & Discovery
+
+- Custom Use-Case Discovery: https://faviens.com/services/use-case-discovery
+- AI Roadmap: https://faviens.com/services/ai-roadmap
+
+Systems & Applications, agentic
+
+- Custom AI Agents: https://faviens.com/services/custom-agentic-frameworks
+- Personal AI Assistants: https://faviens.com/services/agentic-install-optimization
+- Deep Agentic Systems: https://faviens.com/services/deep-agentic-systems
+
+Systems & Applications, data and cloud
+
+- Data Apps & Pipelines: https://faviens.com/services/end-to-end-delivery
+- Enterprise RAG: https://faviens.com/services/enterprise-rag
+
+Workshops & Upskilling
+
+- Agentic AI for Leaders: https://faviens.com/workshops/agentic-ai-leadership
+- AI Governance: https://faviens.com/workshops/ai-governance
+- LLMs & Prompt Engineering: https://faviens.com/workshops/llm-prompting
+- Coding Agents: https://faviens.com/workshops/coding-agents
+- Agentic AI: https://faviens.com/workshops/agentic-ai
+- Data: https://faviens.com/workshops/data
+- Code: https://faviens.com/workshops/code
+- Cloud: https://faviens.com/workshops/cloud
+
+English mirrors every path under /en.
+
+## Company
+
+- [About](https://faviens.com/about) · [English](https://faviens.com/en/about)
+- [Team](https://faviens.com/team) · [English](https://faviens.com/en/team)
+- [Careers](https://faviens.com/careers) · [English](https://faviens.com/en/careers)
+
+## Legal entity
+
+- Faviens GmbH, Stäblistrasse 1, 8006 Zürich, Switzerland
+- UID: CHE-301.720.050, entered in the commercial register of the Canton of
+  Zürich on 2026-09-04
 
 ## Legal
 

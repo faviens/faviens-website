@@ -113,10 +113,19 @@ public/                 static assets: CNAME, robots.txt, llms.txt,
                         generated but gitignored, being binaries)
 src/
   pages/                routes. DE at /, EN mirrored under /en/
+  content/services/     15 services x DE/EN. `track` keys them to a group
+  content/team/         one entry per person, plus the portrait
+  content.config.ts     the collection schemas
   layouts/BaseLayout.astro
   components/           Hero, Header, Footer, ContactCTA, Section, GlobeField,
-                        PageHeader, LanguageSwitcher, BaseHead, Schema
+                        PageHeader, LanguageSwitcher, BaseHead, Schema,
+                        LegalPage, ImprintDetails, ServiceRow, ServiceDetail,
+                        WorkshopDetail, TeamMember, Faq, ServiceSchema,
+                        CourseSchema
   components/marks/     MarkGlobe, MarkWordmark, MarkLockup
+  data/service-groups   the three groups and their streams, structure only
+  data/{workshops,service-details}.ts  which detail page a service renders
+  data/{faq,careers,cities}.ts         generated FAQs, profiles, workshop cities
   lib/globe.mjs         the mark's geometry, and mt19937.mjs under it
   i18n/{de,en,index}.ts typed string tables
   styles/global.css     Tailwind v4 @theme tokens
@@ -373,6 +382,54 @@ Two rules the mark depends on:
 One layout note that cost an iteration: the 2.5rem column only works for
 numerals. A word set in it overruns into the copy beside it.
 
+## The services offering
+
+Three groups, and streams inside two of them. `src/data/service-groups.ts`
+holds the structure and nothing else; every label and description is copy and
+lives in `src/i18n`, keyed by the same identifiers, so a group cannot be
+renamed in one language and not the other.
+
+- **Strategy & Discovery**, one run.
+- **Systems & Applications**, split into `agentic` and `data`. Three of the
+  five are genuinely agentic; a pipeline is not and a RAG deployment is a
+  document platform rather than an agent.
+- **Workshops & Upskilling**, split into `leadership`, `ai` and `foundations`.
+
+The two splits are on **different axes on purpose**. A system is grouped by
+what it is; a workshop by who is in the room, which is the first question
+anyone asks about one. Forcing a single axis onto both would file things
+dishonestly.
+
+The three groups are **top-level navigation tabs**, not one Services tab that
+hides them: the split is what the grouping communicates. Tabs carry the short
+name from `nav`, panels carry the full one from `serviceGroups`. `AI Strategy`
+and `AI Systems` name the domain and `Workshops` does not, deliberately:
+`Applications` sat three items from `Careers` and read as job applications,
+`Strategy` alone reads as generic management consulting, and a third `AI` in a
+five-item bar says nothing the lockup has not already said.
+
+A service is not named `Products`. Every item in the systems group is a
+bespoke build, so a Products tab would send a reader looking for pricing, a
+demo or a trial that does not exist. That tab becomes right the day there is a
+product behind it.
+
+### Two deliberate exceptions to "copy lives in i18n"
+
+`src/data/careers.ts` and `src/data/faq.ts` carry German and English strings
+directly. Both were ported whole from the predecessor site and both are
+structured content rather than interface labels: career profiles with skill
+lists, and the label table that generates a workshop's FAQ from its own
+frontmatter. Splitting either into `i18n` would have meant rewriting the
+phrasing, which the port existed not to do.
+
+### The one tracked binary
+
+`src/content/team/daniel-vogler.jpg`, 1200px, 82 KB. The repository keeps no
+other binaries: the brand assets are generated into a gitignored directory and
+the icons are generated at build. A portrait cannot be generated, and Astro's
+image pipeline needs the source. It is downscaled from a 2.4 MB original
+before committing, because git history is forever.
+
 ## Content rules
 
 - **No em-dashes** anywhere in copy, comments or documentation. Use commas,
@@ -387,7 +444,12 @@ numerals. A word set in it overruns into the copy beside it.
 - A change to German copy ships with its English counterpart in the same pull
   request, and the reverse. A half-translated site is a bug.
 - **No concrete engagement durations, day rates, or prices.** Describe scope
-  instead, so a small engagement reads as welcome.
+  instead, so a small engagement reads as welcome. A workshop's own length is
+  not an engagement duration and may be stated: it is a product detail a buyer
+  needs before booking.
+- **No third-party organisation is named as a client, partner or reference**
+  until Faviens has that relationship in its own right and consent to say so.
+  The predecessor site names three; they are deliberately not carried over.
 
 ## Code conventions
 
@@ -567,9 +629,17 @@ an afterthought. When adding pages:
 
 ## Legal status
 
-The name has never been legally cleared. No Zefix, Swissreg, TMview or WIPO
-search has been run for Faviens. Do not spend on launch, print or paid
-placement until it has. Classes to search are 9, 35 and 42.
+**Faviens GmbH** was entered in the commercial register of the Canton of Zürich
+on 2026-09-04 and published in the SOGC on 2026-09-09, UID `CHE-301.720.050`,
+seat Zürich, sole managing director with individual signing authority. The
+registered facts live in `src/data/company.ts` and are rendered from there by
+the Impressum, the Datenschutz controller clause and the JSON-LD. Correct them
+against the register, never against a document that quotes it.
+
+The company name is registered. **The trade mark is a separate question and is
+still open.** No Zefix, Swissreg, TMview or WIPO search has been run. Do not
+spend on launch, print or paid placement until it has. Classes to search are 9,
+35 and 42.
 
 ## Confidentiality
 

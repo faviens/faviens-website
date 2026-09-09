@@ -1,0 +1,45 @@
+---
+/*
+ * The registered facts on the Impressum: legal name, address, representative,
+ * contact and commercial-register entry. Both locales render the same block,
+ * so it lives here rather than twice in the two pages.
+ */
+import Section from '~/components/Section.astro';
+import { t, type Locale } from '~/i18n';
+import { COMPANY, CONTACT_EMAIL, LEGAL_NAME, addressLines } from '~/data/company';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const s = t(lang).pages.imprint;
+
+const lines = addressLines(COMPANY.address, s.country);
+---
+
+<Section>
+  <div class="max-w-(--container-measure) space-y-8 text-base text-grey leading-relaxed">
+    <div class="space-y-1">
+      <p class="lockup text-ink">{s.responsibleHeading}</p>
+      <p class="text-ink">{LEGAL_NAME}</p>
+      {lines.map((line) => <p>{line}</p>)}
+    </div>
+
+    <div class="space-y-1">
+      <p class="lockup text-ink">{s.representativeHeading}</p>
+      <p>{COMPANY.representative}</p>
+    </div>
+
+    <div class="space-y-1">
+      <p class="lockup text-ink">{s.contactHeading}</p>
+      <p><a href={`mailto:${CONTACT_EMAIL}`} class="link-underline">{CONTACT_EMAIL}</a></p>
+    </div>
+
+    <div class="space-y-1">
+      <p class="lockup text-ink">{s.registerHeading}</p>
+      <p>{s.registerOffice}</p>
+      <p>{COMPANY.uid}</p>
+    </div>
+  </div>
+</Section>

@@ -2,11 +2,23 @@
 import BaseLayout from '~/layouts/BaseLayout.astro';
 import Hero from '~/components/Hero.astro';
 import ContactCTA from '~/components/ContactCTA.astro';
-import { t } from '~/i18n';
+import { getAboutLinks, getNavGroups, t } from '~/i18n';
 import { CONTACT_EMAIL } from '~/data/company';
 
 const lang = 'de' as const;
 const strings = t(lang);
+
+/* The three service groups, then About. The home page is a way in, so it
+   carries the same grouping the header does rather than a second scheme. */
+const about = getAboutLinks(lang)[0];
+const entries = [
+  ...getNavGroups(lang).map((group) => ({
+    href: group.href,
+    label: group.label,
+    blurb: group.blurb,
+  })),
+  { href: about.href, label: about.label, blurb: strings.servicePages.about.lead },
+];
 ---
 
 <BaseLayout
@@ -17,9 +29,39 @@ const strings = t(lang);
   <Hero
     descriptor={strings.hero.descriptor}
     services={strings.hero.services}
-    status={strings.hero.status}
     lead={strings.hero.lead}
   />
+
+  <section class="px-6 md:px-10 py-20 md:py-28 border-t border-hair">
+    <div class="mx-auto max-w-(--container-content)">
+      <p class="lockup text-accent-d">{strings.servicePages.services.heading}</p>
+      <div class="mt-12">
+        {
+          entries.map((entry, i) => (
+            <a
+              href={entry.href}
+              class="group grid gap-x-8 gap-y-3 md:grid-cols-[6rem_1fr] items-start border-b border-hair py-10"
+            >
+              <span
+                class="hidden md:block text-6xl font-extrabold tracking-[-0.05em] text-t0 leading-none"
+                aria-hidden="true"
+              >
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <span>
+                <span class="block text-3xl md:text-5xl font-extrabold tracking-[-0.04em] group-hover:text-accent-d transition-colors">
+                  {entry.label}
+                </span>
+                <span class="mt-4 block max-w-(--container-measure) text-base md:text-lg text-grey leading-relaxed">
+                  {entry.blurb}
+                </span>
+              </span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
 
   <ContactCTA lang={lang} contactEmail={CONTACT_EMAIL} />
 </BaseLayout>

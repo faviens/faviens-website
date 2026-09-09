@@ -13,16 +13,16 @@ export const en: Strings = {
   hero: {
     descriptor: 'Agentic-AI consulting · Zürich',
     services: { prefix: 'AI Agents', items: ['Upskilling', 'Strategy', 'Implementation'] },
-    status: 'Coming soon',
-    lead: 'Faviens is an agentic-AI consultancy based in Zürich. The full site follows shortly.',
+    lead: 'AI, Autonomous Agents & Data Analytics. Cloud or On-Premises.',
   },
   cta: {
-    eyebrow: 'Contact',
+    eyebrow: 'Ready to start?',
   },
   pages: {
     home: {
       title: 'Faviens',
-      description: 'Agentic-AI consulting in Zürich, Switzerland. The full site follows shortly.',
+      description:
+        'Agentic-AI consulting in Zürich. AI, autonomous agents and data analytics, in the cloud or on premises.',
     },
     notFound: {
       title: '404, Faviens',
@@ -35,9 +35,11 @@ export const en: Strings = {
       description: 'Imprint and contact details for Faviens, Zürich.',
       heading: 'Imprint',
       responsibleHeading: 'Responsible for the content',
+      representativeHeading: 'Represented by',
       contactHeading: 'Contact',
+      country: 'Switzerland',
       registerHeading: 'Commercial register',
-      registerPending: 'The commercial register entry is in preparation.',
+      registerOffice: 'Commercial Register Office of the Canton of Zürich',
       sections: [
         {
           heading: 'Liability for content',
@@ -69,7 +71,7 @@ export const en: Strings = {
         {
           heading: 'Controller',
           body: [
-            'Faviens, Zürich, is responsible for the processing of personal data on this website. Contact details are given in the imprint.',
+            'Faviens GmbH, Stäblistrasse 1, 8006 Zürich, is responsible for the processing of personal data on this website. Contact details are given in the imprint.',
           ],
         },
         {
@@ -121,4 +123,106 @@ export const en: Strings = {
   a11y: {
     skipToContent: 'Skip to content',
   },
+  nav: {
+    strategy: 'AI Strategy',
+    systems: 'AI Systems',
+    workshops: 'Workshops',
+    about: 'About',
+    team: 'Team',
+    careers: 'Careers',
+    contact: 'Contact',
+    allServices: 'All services',
+  },
+  serviceGroups: {
+    strategy: {
+      label: 'Strategy & Discovery',
+      blurb: 'Sparring partner for strategy, roadmap, and internal initiatives.',
+    },
+    systems: {
+      label: 'Systems & Applications',
+      blurb: 'Delivery partner for tailored applications, pipelines, and products.',
+    },
+    workshops: {
+      label: 'Workshops & Upskilling',
+      blurb: 'Workshop partner, training teams in the right practices.',
+    },
+  },
+  serviceStreams: {
+    strategy: 'Strategy',
+    agentic: 'Agentic',
+    data: 'Data & cloud',
+    leadership: 'Leadership',
+    ai: 'AI & agents',
+    foundations: 'Data, code & cloud',
+  },
+  serviceDetail: {
+    eyebrow: 'Service',
+    situation: 'The situation',
+    approach: 'How we work',
+    deliverable: 'Deliverable',
+    workstreams: 'Fields of action',
+    outcomes: 'What you get',
+    frame: 'Engagement',
+    duration: 'Duration',
+    involvement: 'Who is involved',
+    format: 'Format',
+    entryPoint: 'Getting started',
+  },
+  workshopDetail: {
+    eyebrow: 'Workshop · On demand',
+    takeaways: "What you'll take away",
+    audience: "Who it's for",
+    format: 'Format',
+    agenda: 'Agenda',
+    details: 'Details',
+    duration: 'Duration',
+    languages: 'Languages',
+    locations: 'Locations',
+    booking: 'Booking',
+    prerequisites: 'Prerequisites',
+  },
+  servicePages: {
+    services: {
+      title: 'Services, Faviens',
+      heading: 'Services',
+      lead: 'Agentic AI solutions, end-to-end delivery, and workshops.',
+    },
+    about: {
+      title: 'About, Faviens',
+      heading: 'About',
+      lead: 'Swiss consulting for AI · agentic AI · analytics · data.',
+      approachHeading: 'Approach',
+      approach: [
+        'Faviens is a Swiss company focused on data-driven and agentic AI solutions. We combine solid data-engineering practices with modern cloud architectures and deliver measurable results, not demos.',
+        'We work in three modes: as a delivery partner for tailored applications, pipelines, and products, as a sparring partner for strategy, roadmap, and internal initiatives, or as a workshop partner training teams in the right practices.',
+      ],
+      valuesHeading: 'Values',
+      values: [
+        { title: 'Result-oriented', body: 'Impact over activity. What counts is the outcome.' },
+        { title: 'Pragmatic', body: 'The simplest thing that works.' },
+        { title: 'Robust', body: 'Production-ready, from day one.' },
+        { title: 'Transparent', body: 'Clear roadmap, clear communication, clear handover.' },
+      ],
+    },
+    team: {
+      title: 'Team, Faviens',
+      heading: 'Team',
+      lead: 'The people and the disciplines behind the work.',
+      disciplinesHeading: 'Disciplines',
+      openingLabel: 'Joining',
+      openingBody: 'A second seat is taken. Who fills it appears here when the time comes.',
+      seatLabel: 'Seat two',
+      portraitLabel: 'Portrait',
+    },
+    careers: {
+      title: 'Careers, Faviens',
+      heading: 'Careers',
+      lead: 'The specialist profiles our services are built on. Speculative applications are welcome.',
+      profilesHeading: 'Profiles',
+      expectationsHeading: 'What we expect',
+      applyLabel: 'Apply',
+      apply: 'Write to us, naming the profile that fits you.',
+    },
+  },
+  ctaHeadline: "Let's talk about your project.",
 };

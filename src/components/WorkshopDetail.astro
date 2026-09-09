@@ -1,0 +1,172 @@
+---
+/*
+ * A workshop page.
+ *
+ * Different spine from an engagement, same vocabulary. The practicalities sit
+ * near the top rather than at the foot, because a workshop is booked rather
+ * than considered: duration, languages, locations and booking terms are what a
+ * reader came for.
+ */
+import type { CollectionEntry } from 'astro:content';
+import { render } from 'astro:content';
+import Faq from '~/components/Faq.astro';
+import { buildWorkshopFaq, faqHeading } from '~/data/faq';
+import { t, type Locale } from '~/i18n';
+
+interface Props {
+  entry: CollectionEntry<'services'>;
+  lang: Locale;
+}
+
+const { entry, lang } = Astro.props;
+const { Content } = await render(entry);
+const s = t(lang).workshopDetail;
+const {
+  title,
+  bluf,
+  topics,
+  audience,
+  format,
+  agenda,
+  duration,
+  languages,
+  locations,
+  booking,
+  prerequisites,
+} = entry.data;
+
+const details = [
+  duration ? { term: s.duration, value: duration } : undefined,
+  languages?.length ? { term: s.languages, value: languages.join(', ') } : undefined,
+  locations?.length ? { term: s.locations, value: locations.join(', ') } : undefined,
+  booking ? { term: s.booking, value: booking } : undefined,
+  prerequisites ? { term: s.prerequisites, value: prerequisites } : undefined,
+].filter((row): row is { term: string; value: string } => Boolean(row));
+
+const faqItems = buildWorkshopFaq(entry, lang);
+---
+
+<section class="px-6 md:px-10 pt-40 pb-20">
+  <div class="mx-auto max-w-(--container-content)">
+    <p class="lockup text-accent-d">{s.eyebrow}</p>
+    <h1
+      class="mt-8 max-w-[14ch] text-5xl md:text-8xl font-extrabold tracking-[-0.045em] leading-[0.92]"
+    >
+      {title.replace(/\n/g, ' ')}
+    </h1>
+    <p class="mt-10 max-w-(--container-measure) text-lg md:text-xl text-grey leading-relaxed">
+      {bluf}
+    </p>
+  </div>
+</section>
+
+<section class="px-6 md:px-10 py-16 md:py-24 border-t border-hair">
+  <div
+    class="mx-auto max-w-(--container-content) max-w-(--container-measure) text-xl md:text-2xl tracking-[-0.02em] leading-snug"
+  >
+    <Content />
+  </div>
+</section>
+
+{
+  details.length > 0 && (
+    <section class="px-6 md:px-10 pb-20 md:pb-24">
+      <div class="mx-auto max-w-(--container-content)">
+        <p class="lockup text-accent-d">{s.details}</p>
+        <dl class="mt-8 border-t border-hair">
+          {details.map((row) => (
+            <div class="grid gap-x-8 md:grid-cols-[10rem_1fr] items-baseline border-b border-hair py-4">
+              <dt class="lockup text-grey">{row.term}</dt>
+              <dd class="max-w-(--container-measure) text-base leading-relaxed">{row.value}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </section>
+  )
+}
+
+{
+  agenda && agenda.length > 0 && (
+    <section class="px-6 md:px-10 py-20 md:py-28 border-t border-hair">
+      <div class="mx-auto max-w-(--container-content)">
+        <p class="lockup text-accent-d">{s.agenda}</p>
+        <div class="mt-12">
+          {agenda.map((item, i) => (
+            <div class="grid gap-x-8 gap-y-3 md:grid-cols-[6rem_1fr] items-start border-b border-hair py-8">
+              <span
+                class="hidden md:block text-6xl font-extrabold tracking-[-0.05em] text-t0 leading-none"
+                aria-hidden="true"
+              >
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <div>
+                <h2 class="text-2xl md:text-4xl font-semibold tracking-[-0.03em]">{item.title}</h2>
+                <p class="mt-3 max-w-(--container-measure) text-base md:text-lg text-grey leading-relaxed">
+                  {item.description}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+{
+  (audience?.length || format?.length) && (
+    <section class="px-6 md:px-10 py-20 md:py-28 border-t border-hair">
+      <div class="mx-auto max-w-(--container-content) grid gap-x-12 gap-y-12 md:grid-cols-2">
+        {audience && audience.length > 0 && (
+          <div>
+            <p class="lockup text-accent-d">{s.audience}</p>
+            <ul class="mt-8 border-t border-hair">
+              {audience.map((line) => (
+                <li class="border-b border-hair py-5 text-lg tracking-[-0.015em] leading-snug">
+                  {line}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {format && format.length > 0 && (
+          <div>
+            <p class="lockup text-accent-d">{s.format}</p>
+            <ul class="mt-8 border-t border-hair">
+              {format.map((line) => (
+                <li class="border-b border-hair py-5 text-lg tracking-[-0.015em] leading-snug text-grey">
+                  {line}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    </section>
+  )
+}
+
+{
+  topics && topics.length > 0 && (
+    <section class="px-6 md:px-10 pb-20 md:pb-28">
+      <div class="mx-auto max-w-(--container-content)">
+        <p class="lockup text-accent-d">{s.takeaways}</p>
+        <p class="mt-8 flex flex-wrap items-baseline gap-x-4 gap-y-2 text-lg md:text-xl tracking-[-0.015em]">
+          {topics.map((topic, i) => (
+            <>
+              {i > 0 && (
+                <span class="text-accent-d" aria-hidden="true">
+                  ·
+                </span>
+              )}
+              <span>{topic}</span>
+            </>
+          ))}
+        </p>
+      </div>
+    </section>
+  )
+}
+
+<Faq items={faqItems} heading={faqHeading(lang)} />

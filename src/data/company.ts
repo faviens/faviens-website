@@ -1,38 +1,39 @@
 /**
  * Legal facts, defined once. The Impressum and Datenschutz pages render from
- * here, so filling in a value updates both locales at once.
+ * here, so a value corrected here is corrected in both locales at once.
  *
- * TODO before the next deploy: `street`, `postalCode` and `uid` are unknown
- * until the company is registered. While `uid` is null the Impressum says the
- * commercial-register entry is pending, and while `street` is null the address
- * block falls back to the city alone. Both are honest placeholders, but a
- * Swiss Impressum is expected to carry a full address, so treat this as
- * incomplete until the registration comes through.
+ * The figures are the commercial-register entry of 2026-09-04, published in
+ * the SOGC on 2026-09-09. Change them only against the register, never against
+ * a document that quotes it.
  */
 export interface CompanyAddress {
-  street: string | null;
-  postalCode: string | null;
+  street: string;
+  postalCode: string;
   city: string;
-  country: string;
+  /** ISO 3166-1 alpha-2. The country's *name* is copy, so it lives in `i18n`. */
   countryCode: string;
 }
 
 export const COMPANY = {
   name: 'Faviens',
-  /** Legal form. Update once the registration is filed. */
-  legalForm: null as string | null,
+  /** Legal form, appended to the name to give the registered legal name. */
+  legalForm: 'GmbH',
   /** Swiss business identification number, CHE-xxx.xxx.xxx. */
-  uid: null as string | null,
+  uid: 'CHE-301.720.050',
+  /** Sole managing director, with individual signing authority. */
+  representative: 'Daniel Vogler',
   address: {
-    street: null,
-    postalCode: null,
+    street: 'Stäblistrasse 1',
+    postalCode: '8006',
     city: 'Zürich',
-    country: 'Schweiz',
     countryCode: 'CH',
   } as CompanyAddress,
   /** Fallback for {@link CONTACT_EMAIL}. Render that, never this. */
   email: 'info@faviens.com',
 } as const;
+
+/** The registered legal name, `Faviens GmbH`, in every locale. */
+export const LEGAL_NAME = `${COMPANY.name} ${COMPANY.legalForm}`;
 
 /**
  * The contact address as rendered, everywhere. The `CONTACT_EMAIL` environment
@@ -43,10 +44,11 @@ export const COMPANY = {
  */
 export const CONTACT_EMAIL: string = import.meta.env.CONTACT_EMAIL || COMPANY.email;
 
-/** Address lines in postal order, skipping anything not yet known. */
-export function addressLines(address: CompanyAddress): string[] {
-  const locality = [address.postalCode, address.city].filter(Boolean).join(' ');
-  return [address.street, locality, address.country].filter((line): line is string =>
-    Boolean(line),
-  );
+/**
+ * Address lines in Swiss postal order. The country name is passed in rather
+ * than stored: it is copy, and an English page reading `Schweiz` is the bug
+ * this signature exists to prevent.
+ */
+export function addressLines(address: CompanyAddress, country: string): string[] {
+  return [address.street, `${address.postalCode} ${address.city}`, country];
 }
