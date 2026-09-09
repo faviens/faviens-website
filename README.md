@@ -1,17 +1,21 @@
-# Faviens
+<p align="center">
+  <img
+    src="https://faviens.com/email-logo-paper.png"
+    alt="Faviens"
+    width="210"
+  />
+</p>
 
 > Agentic-AI consulting in Zürich, Switzerland.
 > Live at **[faviens.com](https://faviens.com)**.
 
 [![Deploy](https://img.shields.io/github/actions/workflow/status/faviens/faviens-website/deploy.yml?branch=main&label=deploy&logo=github)](https://github.com/faviens/faviens-website/actions)
 [![Website](https://img.shields.io/website?url=https%3A%2F%2Ffaviens.com&up_message=live&down_message=down&label=site)](https://faviens.com)
-[![Astro](https://img.shields.io/badge/Astro-6.3-FF5D01?logo=astro&logoColor=white)](https://astro.build)
+[![Astro](https://img.shields.io/badge/Astro-6-FF5D01?logo=astro&logoColor=white)](https://astro.build)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-38BDF8?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 
-Static, bilingual (DE / EN) placeholder site. Zero JavaScript framework, self-hosted fonts, no third-party tracking. Built with Astro and Tailwind v4, deployed via GitHub Actions to GitHub Pages, served from a custom domain. Currently a single coming-soon page; the component and i18n scaffolding is in place to grow into the full site.
-
-Implements the Faviens design handoff of 2026-08-08. See [Design system](#design-system) for which parts are settled and which are still provisional.
+Static, bilingual (DE / EN) site. Zero JavaScript framework, self-hosted fonts, no third-party tracking. Built with Astro and Tailwind v4, deployed via GitHub Actions to GitHub Pages, served from a custom domain. Fifteen services across three groups, each with its own detail or workshop page, plus about, team and careers, mirrored in both locales.
 
 ## Build pipeline
 
@@ -96,9 +100,14 @@ Copy [`.env.example`](.env.example) to `.env.local` for local overrides. Product
 public/               static assets (mark.svg, mark-dot.svg, robots, llms.txt, CNAME)
 src/
   pages/              .astro routes (DE at /, EN at /en/)
+  content/services/   15 services x DE/EN; `track` keys each to a group
+  content/team/       one entry per person, plus the portrait
   layouts/            BaseLayout
-  components/         Hero, Header, Footer, ContactCTA, GlobeField, ...
+  components/         Header, Footer, Hero, ContactCTA, GlobeField,
+                      ServiceRow, ServiceDetail, WorkshopDetail, Faq, ...
   components/marks/   MarkGlobe, MarkWordmark, MarkLockup
+  data/               service groups, workshop and detail routing, FAQ,
+                      careers profiles, workshop cities, company facts
   lib/globe.mjs       the mark's geometry (mt19937.mjs under it)
   i18n/               typed string tables (de.ts, en.ts)
   styles/global.css   Tailwind v4 @theme tokens
@@ -110,9 +119,8 @@ scripts/check-globe.mjs  asserts the generated mark against the artwork of recor
 
 ## Design system
 
-Source: **Faviens Design Handoff, 2026-08-08**.
-
-### Settled
+Source: **Faviens Design Handoff, 2026-08-08**. [AGENTS.md](./AGENTS.md) carries
+the full rules and the reasoning; this is the summary.
 
 | Area     | Decision                                                                                                                                                                               |
 | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -120,55 +128,42 @@ Source: **Faviens Design Handoff, 2026-08-08**.
 | Typeface | Archivo, single family. Hierarchy from size, weight and colour only. Never add a second family                                                                                         |
 | Layout   | Zürich modernist: strict grid, hairline rules, numbered sections in a 2.5rem left column, copy at 58ch, one accent event per screen                                                    |
 
-Token names match the handoff one-to-one, with two exceptions. The handoff's `--black` is `--color-ink` so it does not clobber Tailwind's built-in black, and its `gold` is `accent`: the palette is under review, and a token named for a colour becomes a lie the moment that colour changes.
+Load-bearing rules, each enforced somewhere in the build:
 
-**Every colour in the repository is stated once**, in the `:root` block at the top of `src/styles/global.css`, as an rgb triplet. A triplet is the only form that can also carry an alpha, which is what lets a keyframe write `rgb(var(--rgb-accent) / 0.35)` and the globe field compose an alpha per depth layer per frame without restating anything. `@theme` turns the triplets into the colours Tailwind generates utilities from.
+- **Every colour is stated once**, as an rgb triplet, in the `:root` block of
+  `src/styles/global.css`. Nothing else in the repository contains a colour.
+  The two contexts that cannot resolve a custom property, the `theme-color`
+  meta tag and the standalone SVGs, read the tokens rather than repeat them.
+- **The accent never sets running text.** It measures 3.9:1 on paper, which
+  passes for large text and fails for normal. `--color-accent-d` is 5.3:1 and
+  covers anything below the large-text threshold.
+- **The mark is generated, not pasted.** `src/lib/globe.mjs` and
+  `scripts/generate-og.mjs` write `public/mark*.svg`, the icons and the link
+  preview at `predev` and `prebuild`. `scripts/check-globe.mjs` digests the
+  result against the committed artwork and `pnpm verify` runs it. The committed
+  artwork wins over the generator.
+- **The logo is the horizontal lockup**: wound-string globe left, wordmark
+  right. The wordmark is FAV, a red bar, ENS; the bar stands in for the I and
+  is the mark's only accent event. The `i` stays in the text behind it, so the
+  name extracts as "faviens" rather than "favens".
+- **Two drawings, not three.** `full` is the mark above 28px, `dot` covers the
+  13 to 20px band where bullets live. Icons are PNGs and there is deliberately
+  no SVG favicon.
+- **The background is the identity**, not decoration: `GlobeField.astro` turns
+  the same mark on a canvas, with no dependencies, one static frame under
+  `prefers-reduced-motion`, and no loop while the tab is hidden.
 
-Two contexts cannot resolve a CSS custom property: the `theme-color` meta tag, which takes a literal, and the standalone SVGs behind the icons and the link preview, which have no page to inherit from. Both read the tokens instead of repeating them. `BaseHead.astro` imports the stylesheet a second time with Vite's `?raw` and parses it; the marks, icons and link preview are **generated** from `src/lib/globe.mjs` and the templates in `scripts/assets/` by `scripts/generate-og.mjs`, which runs on `predev` and `prebuild` and throws if a template names a token or a mark variant that does not exist.
-
-Changing the palette is therefore the ten accent and ramp lines in `global.css`, and nothing else. Verified by swapping the whole family and reverting: the mark, the status marker, the labels, the globe field, the favicon and the OG image all followed.
-
-One contrast rule is load-bearing and enforced in the components. The accent measures **3.9:1** on paper, which passes for large text and fails for normal text, so it is never used for running text or for type below the large-text threshold. `--color-accent-d` is **5.3:1** and covers small type: the eyebrows, the language switcher and the services prefix below `md` all use it.
-
-### Draft in review, not final
-
-As of 2026-08-17 the site runs a **draft** identity: a red accent family in place of the handoff's gold, and FAVIENS in capitals with the A and the I in the accent. The globe joined it on 2026-09-04, from a brand package delivered outside this repository. Neither has been through an identity review. The gold palette and the tittle mark it replaced are in git history, and reverting the palette is the ten accent and ramp triplets in `global.css`.
-
-Only the chosen direction is in the tree. The candidates it beat, the sheets they came from and the harness that compared them are deliberately not here: the repository carries what the site uses.
-
-The logo is the **horizontal lockup**: a wound-string globe on the left, the wordmark on the right. The wordmark is **FAV, a red bar, ENS**, capitals set in ink with the bar standing in for the I as the mark's only accent event. See [`MarkLockup.astro`](src/components/marks/MarkLockup.astro), [`MarkGlobe.astro`](src/components/marks/MarkGlobe.astro) and [`MarkWordmark.astro`](src/components/marks/MarkWordmark.astro).
-
-The capitals are `text-transform`, not typed, and the `i` is still in the text behind the bar. The page text stays "faviens", so the site is never quoted back as "FAVIENS" or, worse, as "favens".
-
-### The globe
-
-Sixty strands, each a real circle lying on a sphere and projected orthographically. The crossings, the bunching at the silhouette and the roundness fall out of the 3D geometry; 2D noise does not give the same silhouette.
-
-It is generated rather than pasted in, by [`src/lib/globe.mjs`](src/lib/globe.mjs), because the background has to turn the sphere and a flattened SVG has no depth left to turn. [`src/lib/mt19937.mjs`](src/lib/mt19937.mjs) reproduces CPython's Mersenne Twister exactly, so seed 7714 draws the same sixty strands here as it did in the brand package's Python build: `scripts/check-globe.mjs` digests the output and compares it against the committed `faviens-circle.svg`, which it matches byte for byte. `pnpm verify` runs that check, and the committed artwork wins over the generator.
-
-The real mark holds down to about **28px**. Below that the strands fall under a pixel and it rasterises as a soft disc, so there are two drawings: `full` wherever the mark is a logo, which is everywhere above 28px including the favicon from 32px up, and `dot` (the first eight strands of the same sequence, thicker-stroked and on the flat accent) for the 13 to 20px band where bullets live. That floor is why the header wordmark is set at 30px, which is what puts the globe beside it at 28px. `public/mark.svg` and `mark-dot.svg` are the two, written at `predev` and `prebuild`.
-
-The wordmark is **FAV, a red bar, ENS**: the bar stands in for the I at 0.42 of its stem width and is the mark's only accent event. The `i` stays in the text, visually hidden, so the name still extracts and reads as "faviens". The bar is an SVG rect rather than a coloured box, because a background colour is painted onto whole device pixels and the bar's width came out 8% over in the header and under 1% in the hero, which is visible when both are on screen.
-
-Icons are PNGs and there is deliberately no SVG favicon: a browser offered one prefers it and then rasterises sixty hairline strands however it likes, which comes out a soft disc. The 32 and 48px icons are drawn here with the strokes inked up for the raster; 180 and 512 use the logo untouched. There is no 16px icon, because nothing legible as this mark exists at 16px.
-
-The lockup's numbers are the brand package's: diameter 1.34 cap heights, gap 0.35, circle centred on the **cap midline** and not on the type's box, which is what stops it reading as hanging. The bar is centred on that same line and is exactly as tall as the circle is wide, which is a deliberate departure: the package gives the bar a real pipe glyph's asymmetric overshoot, and beside the circle the two then disagree. Archivo 800's cap is 0.68709em and its I stem 0.179469em, both measured in a browser and stated once in `src/lib/type.mjs`.
-
-### The globe field
-
-[`src/components/GlobeField.astro`](src/components/GlobeField.astro) draws the moving background: the same mark, a little larger than the viewport's shorter side, turning once every 150 seconds. Canvas, no dependencies. It replaces the node field, which was an exception to the ban on network decoration; the background is now the identity itself, so the exception is gone and the ban stands as written.
-
-Two modes. `draw` lays the strands down one after another as the sphere turns and then keeps turning, so the mark builds itself once per visit; `rotate` is already turning when the page opens. `draw` is the default, and `BaseLayout` takes `backgroundMode` to switch it.
-
-The projection is recomputed every frame rather than an image being spun: the strands cross differently at every angle, which is what a real sphere does and what the eye reads as one. Strands are batched into three paths by depth, so a frame is three strokes. A radial mask holds the field back over the band the lockup and the lead sit in, at 0.45 rather than 0, because a hole punched in the sphere reads worse than the crossings did.
-
-The three depth colours come from `--globe-back`, `--globe-mid` and `--globe-front` in `global.css`, so an accent change moves the field with it. There is no fallback colour in the component: a fallback would be the one place a palette value is written twice.
-
-`BaseLayout` takes `background="off" | "quiet" | "active"` and defaults to `quiet`; the legal pages pass `off`. Under `prefers-reduced-motion` it paints one static frame and never starts the loop, and it stops entirely when the tab is hidden or it scrolls out of view.
+Not signed off: the red accent family in place of the handoff's gold, and the
+globe and bar wordmark delivered on 2026-09-04. Reverting the palette is the
+ten accent and ramp triplets in `global.css` and nothing else.
 
 ### Still open
 
-The name has **not been legally cleared** (Zefix, Swissreg classes 9/35/42, TMview, WIPO). The imprint and privacy pages do not exist yet. `Header` and `Footer` accept `navLinks` / `legalLinks` and render those blocks only when non-empty.
+- The name has **not been cleared as a trade mark**: Swissreg classes 9, 35 and
+  42, TMview, WIPO. The company name is registered; the mark is a separate
+  question.
+- **No mobile navigation.** The header nav is `md:` and up, and the footer
+  carries legal links only.
 
 ## Deployment
 
@@ -181,8 +176,6 @@ The name has **not been legally cleared** (Zefix, Swissreg classes 9/35/42, TMvi
 5. `smoke`: wait for the live domain to serve this run's commit, then check the real pages
 
 The artifact contains `public/CNAME`, which keeps `faviens.com` wired to the deployment across runs.
-
-The `smoke` job stays red until the DNS records below and the Pages custom domain are in place. That is the intended signal: it is the check that tells you the domain work is finished.
 
 ### DNS
 
@@ -205,6 +198,6 @@ The `smoke` job stays red until the DNS records below and the Pages custom domai
 
 ## License
 
-Copyright © 2026 Daniel Vogler / FAVIENS. All rights reserved. See [`LICENSE`](./LICENSE).
+Copyright © 2026 Faviens GmbH, Zürich. All rights reserved. See [`LICENSE`](./LICENSE).
 
 Source is published for transparency. No usage, redistribution, or derivative-work rights are granted without explicit written permission.
