@@ -113,14 +113,20 @@ jobs:
             return 1
           }
 
-          for path in / /en /sitemap-index.xml /robots.txt /llms.txt; do
+          for path in / /en /services /en/services /team /sitemap-index.xml /robots.txt /llms.txt; do
             retry "$path is not reachable" reachable "$path" \
               || echo "      last status was $(http_code "$path")"
           done
 
           retry '/ does not show the wordmark' has_text / faviens
           retry '/ does not show the contact address' has_text / info@faviens.com
-          retry '/en is not in English' has_text /en 'Coming soon'
+
+          # A phrase that differs between the locales, so this catches a page
+          # served in the wrong language rather than merely a page that loads.
+          # It was 'Coming soon' until the placeholder was replaced, which is a
+          # reminder that a smoke test asserting copy has to move with the copy.
+          retry '/ is not in German' has_text / 'Autonome Agenten'
+          retry '/en is not in English' has_text /en 'Autonomous Agents'
 
           rm -f "$page"
 
