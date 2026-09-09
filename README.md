@@ -2,7 +2,7 @@
   <img
     src="https://faviens.com/email-logo-paper.png"
     alt="Faviens"
-    width="210"
+    width="300"
   />
 </p>
 
