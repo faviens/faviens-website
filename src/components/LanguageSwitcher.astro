@@ -3,15 +3,25 @@ import { otherLocalePath, t, type Locale } from '~/i18n';
 
 interface Props {
   lang: Locale;
+  /**
+   * `bar` is the header's inline pair, set at eyebrow size. `row` is the line
+   * it takes in the mobile menu, where it is one item among the others and has
+   * to carry a tap target rather than 11px of type.
+   */
+  variant?: 'bar' | 'row';
 }
 
-const { lang } = Astro.props;
+const { lang, variant = 'bar' } = Astro.props;
 const strings = t(lang);
 const otherLocale: Locale = lang === 'de' ? 'en' : 'de';
 const otherHref = otherLocalePath(Astro.url.pathname, lang);
+const isRow = variant === 'row';
 ---
 
-<div class="eyebrow flex items-center gap-1.5" aria-label={strings.languageSwitcher.label}>
+<div
+  class:list={['flex items-center', isRow ? 'gap-3 py-4 text-base' : 'eyebrow gap-1.5']}
+  aria-label={strings.languageSwitcher.label}
+>
   <!--
     The current language is marked in the accent rather than in ink. At this size
     the accent itself fails contrast, so this is --color-accent-d, which is the
@@ -21,7 +31,10 @@ const otherHref = otherLocalePath(Astro.url.pathname, lang);
     {strings.languageSwitcher[lang]}
   </span>
   <span class="text-hair" aria-hidden="true">/</span>
-  <a href={otherHref} class="text-grey hover:text-ink transition-colors">
+  <a
+    href={otherHref}
+    class:list={['text-grey transition-colors hover:text-ink', isRow && '-m-2 p-2']}
+  >
     {strings.languageSwitcher[otherLocale]}
   </a>
 </div>
