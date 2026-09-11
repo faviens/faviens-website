@@ -114,17 +114,19 @@ public/                 static assets: CNAME, robots.txt, llms.txt,
 src/
   pages/                routes. DE at /, EN mirrored under /en/
   content/services/     15 services x DE/EN. `track` keys them to a group
-  content/team/         one entry per person, plus the portrait
+  content/team/         one entry per person, plus the portrait. Rendered by
+                        the contact page, not by a roster
+  content/jobs/         one open role x DE/EN
   content.config.ts     the collection schemas
   layouts/BaseLayout.astro
   components/           Hero, Header, Footer, ContactCTA, Section, GlobeField,
                         PageHeader, LanguageSwitcher, BaseHead, Schema,
                         LegalPage, ImprintDetails, ServiceRow, ServiceDetail,
-                        WorkshopDetail, TeamMember, Faq, ServiceSchema,
-                        CourseSchema
+                        WorkshopDetail, ContactPerson, JobDetail, Faq,
+                        ServiceSchema, CourseSchema, JobSchema
   components/marks/     MarkGlobe, MarkWordmark, MarkLockup
   data/service-groups   the three groups and their streams, structure only
-  data/{workshops,service-details}.ts  which detail page a service renders
+  data/{workshops,service-details,jobs}.ts  which detail page an entry renders
   data/{faq,careers,cities}.ts         generated FAQs, profiles, workshop cities
   lib/globe.mjs         the mark's geometry, and mt19937.mjs under it
   i18n/{de,en,index}.ts typed string tables
@@ -413,6 +415,98 @@ bespoke build, so a Products tab would send a reader looking for pricing, a
 demo or a trial that does not exist. That tab becomes right the day there is a
 product behind it.
 
+## The contact page, which was the team page
+
+`/kontakt` and `/en/contact`, renamed from `/team` on 2026-09-11 and moved off
+that route rather than left on it, so the URL and the heading agree.
+
+`/team` and `/en/team` had been live since 2026-09-09 and were in the published
+sitemap, so they are kept as redirect stubs through `redirects` in
+`astro.config.mjs`. A static host has no redirect rules, so Astro emits a small
+HTML page carrying a canonical link and a meta refresh: weaker than a 301, and
+strictly better than a 404. **A renamed route that was ever deployed gets an
+entry there**, and the sitemap `filter` beside it keeps the old path out of the
+sitemap, which would otherwise go on advertising it as canonical content and
+undo the rename.
+
+A team page with one person on it is a roster with one row, and a roster with
+one row publishes a headcount whether or not a sentence states one. The page is
+now built as a way to reach the company and does one thing: the named contact
+set sideways as a card (`ContactPerson`, portrait beside the details rather
+than above them, which is the whole reason the component exists). Nothing
+counts the people.
+
+The disciplines block moved to `/about` on 2026-09-11, below Werte. It
+describes what the firm can do, which is a question a reader asks before
+deciding to write rather than after, and on a page whose whole job is `here is
+who to write to` it was a second subject competing with the first. It read
+right under a Team heading and stopped reading right under a Contact one.
+
+**Which page owns what**, so this does not drift back:
+
+- `/about` is what the firm is. Ansatz, Werte, Disziplinen.
+- `/kontakt` is how to reach it. One named contact, nothing else.
+- `/careers` is what is being hired. Offene Stellen, Profile, Erwartungen.
+
+`PROFILES_DE` / `PROFILES_EN` in `src/data/careers.ts` feeds both About and
+Careers from one table: summaries on About, the full skill lists on Careers.
+Same subject at two depths for two readers, not a duplicate. Do not fork it.
+
+The empty dashed `seat two` frame that used to sit beside the founder is gone.
+It answered a question nobody asked and advertised the size of the firm while
+doing it. The role it stood for is now a page of its own under `/careers`,
+which is where somebody looking for one goes.
+
+`Kontakt` is a top-level header link rather than a member of the About group,
+because the header already carried a standing `Kontakt` link to the closing
+block and two items under the same word, pointing at different things, is worse
+than either arrangement alone. That link now lands on the page, which ends with
+the closing block anyway.
+
+## Open roles
+
+`src/content/jobs/`, one file per locale per role, rendered by
+`/careers/[slug]` and listed at the top of `/careers` ahead of the standing
+profiles. Someone who arrives from an advertisement elsewhere should not have
+to scroll past four speculative profiles to reach the one that is open. The
+list renders nothing when the collection is empty, rather than an apologetic
+`no openings right now`, which dates itself the moment it is true.
+
+Three things in the schema are load-bearing:
+
+- **The company half of an ad is not authored in the ad.** `JobDetail` reads it
+  back from `servicePages.about.approach`, the same strings the About page
+  sets, because a candidate who reads both pages in one sitting and finds two
+  different descriptions of the company has learned something true about it.
+  Only the recruiting-specific sentences, which have no business on an About
+  page, come from the entry's own `pitch`.
+- **`posted` is a quoted string, not a YAML date.** An unquoted date-like
+  scalar is parsed into a `Date` at the build machine's timezone, which puts it
+  a day out for half the world.
+- **There is no application deadline**, decided 2026-09-11: the closing date is
+  internal. It is absent from the frontmatter, not merely hidden in the
+  template, because this repository is public and a date in a content file is
+  as published as a date on the page. The cost is that `JobPosting` ships
+  without `validThrough`, so an aggregator treats the ad as open until it
+  disappears. **Deleting the two files is therefore what closes a role**, and
+  leaving a filled one in the tree keeps it collecting applications.
+- **`jobLocationType` and `applicantLocationRequirements` are deliberately
+  absent.** Both are the remote signal, and a hybrid role that claims them is
+  listed as fully remote.
+
+### The careers page has two lists, and they must not look alike
+
+An open role and a standing profile are different kinds of thing, and the page
+shows both in sequence. The open role is therefore **not numbered and not in a
+left-column grid**: set as `01` above a numbered list of profiles it read as
+the first item of that same list. It runs full width and larger, so the
+difference is carried by weight.
+
+The profiles section leads with a sentence saying outright that these are not
+advertised positions. Four numbered headings following the open roles read as
+four more vacancies unless something says otherwise. That lead is load-bearing,
+not decoration.
+
 ### Two deliberate exceptions to "copy lives in i18n"
 
 `src/data/careers.ts` and `src/data/faq.ts` carry German and English strings
@@ -435,7 +529,11 @@ before committing, because git history is forever.
 - **No em-dashes** anywhere in copy, comments or documentation. Use commas,
   parentheses, an interpunct, or two sentences. `pnpm verify` enforces this.
 - **Swiss German orthography**: `ss`, never the sharp s.
-- **Formal address** in German copy (`Sie`).
+- **Formal address** in German copy (`Sie`), with one carve-out: **a job ad
+  addresses the reader as `Du`**, agreed on 2026-09-11. Job ads in Swiss tech
+  normally do, and the informal address is part of what the ad is claiming about
+  how the company works. It is scoped to `src/content/jobs/` and nothing else.
+  Do not "fix" it to `Sie`, and do not spread it to the rest of the site.
 - **The name.** Faviens is a coinage, not a Latin word. Say that it "blends" or
   is "derived from" `favere` and `agens`. Never write that it "means" anything,
   and never claim it appears in classical texts.
@@ -636,10 +734,16 @@ registered facts live in `src/data/company.ts` and are rendered from there by
 the Impressum, the Datenschutz controller clause and the JSON-LD. Correct them
 against the register, never against a document that quotes it.
 
-The company name is registered. **The trade mark is a separate question and is
-still open.** No Zefix, Swissreg, TMview or WIPO search has been run. Do not
-spend on launch, print or paid placement until it has. Classes to search are 9,
-35 and 42.
+**The trade mark hold that stood here is lifted**, by the maintainer's decision
+of 2026-09-09. Classes 9, 35 and 42 were the ones in question. Launch, print
+and paid placement are no longer gated on it.
+
+One distinction to keep straight, because the two are easy to conflate: the
+entry above registers a **company name** at the Handelsregister, which is what
+Zefix and the UID show. A **trade mark** is a separate right, granted by the
+IGE and searched on Swissreg, TMview or WIPO. A UID does not evidence one.
+Whatever backs the clearance is held outside this repository, so do not
+re-derive the answer from the register extract.
 
 ## Confidentiality
 

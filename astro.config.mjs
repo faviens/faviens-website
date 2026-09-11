@@ -15,10 +15,29 @@ import sitemap from '@astrojs/sitemap';
 // canonical URL would come out relative.
 const SITE = process.env.SITE_URL || 'https://faviens.com';
 
+/*
+ * Routes that have been live and have moved. `/team` and `/en/team` were
+ * published on 2026-09-09 and renamed to the contact page on 2026-09-11, and
+ * they had three days in the sitemap to be indexed and linked from.
+ *
+ * A static host has no redirect rules, so Astro emits a small HTML page at the
+ * old path carrying a canonical link and a meta refresh. That is weaker than a
+ * 301 and it is what a static site gets; it is still strictly better than the
+ * 404 the rename would otherwise leave behind.
+ *
+ * These entries are permanent once added. Delete one only when the old URL has
+ * genuinely stopped being requested.
+ */
+const MOVED = {
+  '/team': '/kontakt',
+  '/en/team': '/en/contact',
+};
+
 export default defineConfig({
   site: SITE,
   trailingSlash: 'never',
   build: { format: 'directory' },
+  redirects: MOVED,
   i18n: {
     defaultLocale: 'de',
     locales: ['de', 'en'],
@@ -26,6 +45,10 @@ export default defineConfig({
   },
   integrations: [
     sitemap({
+      // A redirect stub is not a page. Left in, the sitemap would go on
+      // advertising the old URL as canonical content and undo the rename.
+      filter: (page) =>
+        !Object.keys(MOVED).some((from) => new URL(page).pathname.replace(/\/$/, '') === from),
       i18n: {
         defaultLocale: 'de',
         locales: { de: 'de-CH', en: 'en' },

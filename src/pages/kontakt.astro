@@ -1,0 +1,96 @@
+---
+/*
+ * The contact page, formerly the team page.
+ *
+ * Built as a way to reach the company rather than as a roster: one named
+ * contact set as a card, and nothing else. No sentence states a headcount and
+ * nothing counts the people, because a
+ * young firm that claims a number a reader can check is making a claim it has
+ * to keep, and because the question a visitor actually arrives with is who to
+ * write to.
+ *
+ * The empty `seat two` frame that used to sit beside the founder is gone. It
+ * answered a question nobody asked and advertised the size of the firm while
+ * doing it; the open role it stood for now has a page of its own under
+ * /careers, which is where someone looking for one goes.
+ *
+ * The disciplines block that used to close this page moved to /about on
+ * 2026-09-11. It describes what the firm can do, which is a question a reader
+ * asks before deciding to write, not after; on a page whose whole job is `here
+ * is who to write to` it was a second subject competing with the first.
+ */
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import ContactCTA from '~/components/ContactCTA.astro';
+import ContactPerson from '~/components/ContactPerson.astro';
+import { t } from '~/i18n';
+import { CONTACT_EMAIL } from '~/data/company';
+
+const lang = 'de' as const;
+const strings = t(lang);
+const page = strings.servicePages.contact;
+
+const entries = await getCollection('team', (e) => e.data.lang === lang);
+entries.sort((a, b) => a.data.order - b.data.order);
+const people = await Promise.all(
+  entries.map(async (entry) => ({ data: entry.data, Content: (await render(entry)).Content })),
+);
+
+/** `https://www.linkedin.com/in/x/` rendered as `linkedin.com/in/x`. */
+function linkedinLabel(url: string): string {
+  return url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '');
+}
+---
+
+<BaseLayout title={page.title} description={page.lead} lang={lang}>
+  <section class="px-6 md:px-10 pt-40 pb-20">
+    <div class="mx-auto max-w-(--container-content)">
+      <p class="lockup text-accent-d">{page.heading}</p>
+      <h1
+        class="mt-8 max-w-[16ch] text-5xl md:text-8xl font-extrabold tracking-[-0.045em] leading-[0.92]"
+      >
+        {page.heading}
+      </h1>
+      <p class="mt-10 max-w-(--container-measure) text-lg md:text-xl text-grey leading-relaxed">
+        {page.lead}
+      </p>
+    </div>
+  </section>
+
+  <section class="px-6 md:px-10 py-20 md:py-28 border-t border-hair">
+    <div class="mx-auto max-w-(--container-content)">
+      <p class="lockup text-accent-d">{page.personHeading}</p>
+      <div class="mt-12 space-y-20">
+        {
+          people.map(({ data, Content }) => (
+            <ContactPerson
+              name={data.name}
+              role={data.role}
+              photo={data.photo}
+              portraitLabel={page.portraitLabel}
+              backgroundLabel={page.backgroundLabel}
+              rows={[
+                { label: page.emailLabel, value: CONTACT_EMAIL, href: `mailto:${CONTACT_EMAIL}` },
+                ...(data.linkedin
+                  ? [
+                      {
+                        label: 'LinkedIn',
+                        value: linkedinLabel(data.linkedin),
+                        href: data.linkedin,
+                        external: true,
+                      },
+                    ]
+                  : []),
+                { label: page.locationLabel, value: strings.footer.location },
+              ]}
+            >
+              <Content />
+            </ContactPerson>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <ContactCTA lang={lang} contactEmail={CONTACT_EMAIL} />
+</BaseLayout>

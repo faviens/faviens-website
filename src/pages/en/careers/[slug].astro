@@ -1,0 +1,46 @@
+---
+/*
+ * One open role. The slug drops the `.de` / `.en` suffix the collection files
+ * carry, so both locales sit on the same path under their own prefix and the
+ * language switcher's naive mirroring keeps working.
+ */
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import ContactCTA from '~/components/ContactCTA.astro';
+import JobDetail from '~/components/JobDetail.astro';
+import JobSchema from '~/components/JobSchema.astro';
+import { APPLY_EMAIL, CONTACT_EMAIL } from '~/data/company';
+import { careersHref, t } from '~/i18n';
+import { jobSlug } from '~/data/jobs';
+
+const lang = 'en' as const;
+
+export async function getStaticPaths() {
+  const entries = await getCollection('jobs', (e) => e.data.lang === 'en');
+  return entries.map((entry) => ({
+    params: { slug: jobSlug(entry) },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const strings = t(lang);
+const { Content } = await render(entry);
+---
+
+<BaseLayout title={`${entry.data.title}, Faviens`} description={entry.data.bluf} lang={lang}>
+  <JobSchema
+    title={entry.data.title}
+    description={entry.data.bluf}
+    datePosted={entry.data.posted}
+    employmentTypeCode={entry.data.employmentTypeCode}
+    careersHref={careersHref(lang)}
+    careersLabel={strings.servicePages.careers.heading}
+  />
+
+  <JobDetail entry={entry} lang={lang} careersHref={careersHref(lang)} applyEmail={APPLY_EMAIL}>
+    <Content />
+  </JobDetail>
+
+  <ContactCTA lang={lang} contactEmail={CONTACT_EMAIL} />
+</BaseLayout>

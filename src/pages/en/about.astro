@@ -3,9 +3,19 @@ import BaseLayout from '~/layouts/BaseLayout.astro';
 import ContactCTA from '~/components/ContactCTA.astro';
 import { t } from '~/i18n';
 import { CONTACT_EMAIL } from '~/data/company';
+import { PROFILES_DE, PROFILES_EN } from '~/data/careers';
 
 const lang = 'en' as const;
 const page = t(lang).servicePages.about;
+
+/*
+ * The disciplines are the same four profiles the careers page lists, read from
+ * the same table so the two cannot drift. Here they are summaries, describing
+ * what the firm can do; there they carry the skill lists, describing what a
+ * candidate would be hired into. Same subject, different depth and different
+ * reader, which is why one table feeds both rather than each page owning a copy.
+ */
+const disciplines = { de: PROFILES_DE, en: PROFILES_EN }[lang];
 ---
 
 <BaseLayout title={page.title} description={page.lead} lang={lang}>
@@ -45,6 +55,34 @@ const page = t(lang).servicePages.about;
             <div class="border-t border-hair pt-6">
               <h2 class="text-2xl md:text-3xl font-semibold tracking-[-0.025em]">{value.title}</h2>
               <p class="mt-3 max-w-[40ch] text-base text-grey leading-relaxed">{value.body}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="px-6 md:px-10 py-20 md:py-28 border-t border-hair">
+    <div class="mx-auto max-w-(--container-content)">
+      <p class="lockup text-accent-d">{page.disciplinesHeading}</p>
+      <p class="mt-8 max-w-(--container-measure) text-lg text-grey leading-relaxed">
+        {page.disciplinesLead}
+      </p>
+      <div class="mt-12 border-t border-hair">
+        {
+          disciplines.map((discipline, i) => (
+            <div class="grid gap-x-8 gap-y-3 md:grid-cols-[4rem_1fr] items-start border-b border-hair py-8">
+              <span class="eyebrow text-accent-d md:pt-2" aria-hidden="true">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <div>
+                <h2 class="text-2xl md:text-3xl font-semibold tracking-[-0.025em]">
+                  {discipline.title}
+                </h2>
+                <p class="mt-3 max-w-[52ch] text-base text-grey leading-relaxed">
+                  {discipline.summary}
+                </p>
+              </div>
             </div>
           ))
         }

@@ -64,7 +64,6 @@ export interface Strings {
     systems: string;
     workshops: string;
     about: string;
-    team: string;
     careers: string;
     contact: string;
     allServices: string;
@@ -110,26 +109,46 @@ export interface Strings {
       approach: string[];
       valuesHeading: string;
       values: { title: string; body: string }[];
+      disciplinesHeading: string;
+      disciplinesLead: string;
     };
-    team: {
+    contact: {
       title: string;
       heading: string;
       lead: string;
-      disciplinesHeading: string;
-      openingLabel: string;
-      openingBody: string;
-      seatLabel: string;
+      personHeading: string;
+      emailLabel: string;
+      locationLabel: string;
+      backgroundLabel: string;
       portraitLabel: string;
     };
     careers: {
       title: string;
       heading: string;
       lead: string;
+      openRolesHeading: string;
+      viewRole: string;
       profilesHeading: string;
+      profilesLead: string;
       expectationsHeading: string;
       applyLabel: string;
       apply: string;
     };
+  };
+  jobPage: {
+    eyebrow: string;
+    companyHeading: string;
+    roleHeading: string;
+    responsibilitiesHeading: string;
+    qualificationsHeading: string;
+    detailsHeading: string;
+    locationLabel: string;
+    employmentLabel: string;
+    workModeLabel: string;
+    languageLabel: string;
+    applyHeading: string;
+    applyBody: string;
+    backLabel: string;
   };
   ctaHeadline: string;
 }
@@ -262,7 +281,6 @@ export const de: Strings = {
     systems: 'KI-Systeme',
     workshops: 'Workshops',
     about: 'Über uns',
-    team: 'Team',
     careers: 'Karriere',
     contact: 'Kontakt',
     allServices: 'Alle Leistungen',
@@ -327,7 +345,9 @@ export const de: Strings = {
       lead: 'Schweizer Beratung für KI · agentische KI · Analytics · Daten.',
       approachHeading: 'Ansatz',
       approach: [
-        'Faviens ist ein Schweizer Unternehmen mit Fokus auf datengetriebene und agentische KI-Lösungen. Wir kombinieren saubere Daten-Engineering-Praktiken mit modernen Cloud-Architekturen und liefern messbare Resultate, keine Demos.',
+        'Faviens ist eine Boutique-KI-Firma in Zürich, spezialisiert auf agentische Systeme. Unsere Kunden sitzen in der ganzen Schweiz. Wir lösen die Probleme, die ihr Geschäft ausbremsen.',
+        'Wir bauen agentische KI-Anwendungen, die ausreizen, was heute technisch möglich ist, und betreiben sie in Produktion, in der Cloud oder on premises. Unser eigenes Betriebsmodell ist in jedem Teil des Unternehmens durchgängig agentisch.',
+        'Faviens wird von einem Team geführt, das auf der einen Seite ein Jahrzehnt in ML und KI mitbringt. Auf der anderen stehen zwei Jahrzehnte Erfahrung in Business und Business Development, bei einigen der weltgrössten Tech-Konzerne und in schnell wachsenden Scale-ups.',
         'Wir arbeiten in drei Modi: als Delivery-Partner für massgeschneiderte Anwendungen, Pipelines und Produkte, als Sparring-Partner für Strategie, Roadmap und interne Initiativen, oder als Workshop-Partner, der Teams in die richtigen Praktiken einführt.',
       ],
       valuesHeading: 'Werte',
@@ -337,27 +357,48 @@ export const de: Strings = {
         { title: 'Robust', body: 'Produktionsreif, ab dem ersten Tag.' },
         { title: 'Transparent', body: 'Klare Roadmap, klare Kommunikation, klare Übergabe.' },
       ],
-    },
-    team: {
-      title: 'Team, Faviens',
-      heading: 'Team',
-      lead: 'Die Menschen und die Disziplinen hinter der Arbeit.',
       disciplinesHeading: 'Disziplinen',
-      openingLabel: 'Kommt dazu',
-      openingBody:
-        'Ein zweiter Platz ist vergeben. Wer ihn einnimmt, steht hier, sobald es so weit ist.',
-      seatLabel: 'Platz zwei',
+      disciplinesLead:
+        'Die Fachgebiete, aus denen wir ein Mandat besetzen. Welche davon ein Projekt braucht, klären wir im ersten Gespräch.',
+    },
+    contact: {
+      title: 'Kontakt, Faviens',
+      heading: 'Kontakt',
+      lead: 'Ihr direkter Draht zu Faviens, für ein erstes Gespräch oder eine konkrete Anfrage.',
+      personHeading: 'Ihr Ansprechpartner',
+      emailLabel: 'E-Mail',
+      locationLabel: 'Standort',
+      backgroundLabel: 'Hintergrund',
       portraitLabel: 'Porträt',
     },
     careers: {
       title: 'Karriere, Faviens',
       heading: 'Karriere',
-      lead: 'Die Fachprofile, auf denen unsere Leistungen aufbauen. Initiativbewerbungen sind willkommen.',
+      lead: 'Offene Stellen und die Fachprofile, auf denen unsere Leistungen aufbauen. Initiativbewerbungen sind willkommen.',
+      openRolesHeading: 'Offene Stellen',
+      viewRole: 'Stelle ansehen',
       profilesHeading: 'Profile',
+      profilesLead:
+        'Keine ausgeschriebenen Stellen, sondern die Fachrichtungen, in denen wir arbeiten. Eine Initiativbewerbung auf eines dieser Profile ist jederzeit willkommen.',
       expectationsHeading: 'Was wir erwarten',
       applyLabel: 'Bewerbung',
       apply: 'Schreiben Sie uns, mit dem Profil, das zu Ihnen passt.',
     },
+  },
+  jobPage: {
+    eyebrow: 'Offene Stelle',
+    companyHeading: 'Über Faviens',
+    roleHeading: 'Die Rolle',
+    responsibilitiesHeading: 'Aufgaben',
+    qualificationsHeading: 'Qualifikationen',
+    detailsHeading: 'Rahmen',
+    locationLabel: 'Ort',
+    employmentLabel: 'Pensum',
+    workModeLabel: 'Arbeitsmodell',
+    languageLabel: 'Arbeitssprache',
+    applyHeading: 'Bewerbung',
+    applyBody: 'Bewerbungen mit Lebenslauf an die Adresse unten.',
+    backLabel: 'Alle offenen Stellen',
   },
   ctaHeadline: 'Sprechen wir über Ihr Projekt.',
 };

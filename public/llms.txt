@@ -50,8 +50,14 @@ English mirrors every path under /en.
 ## Company
 
 - [About](https://faviens.com/about) · [English](https://faviens.com/en/about)
-- [Team](https://faviens.com/team) · [English](https://faviens.com/en/team)
+- [Contact](https://faviens.com/kontakt) · [English](https://faviens.com/en/contact)
 - [Careers](https://faviens.com/careers) · [English](https://faviens.com/en/careers)
+
+## Open roles
+
+- Senior AI Engineer, full-time and hybrid in Zürich:
+  https://faviens.com/careers/senior-ai-engineer
+  · [English](https://faviens.com/en/careers/senior-ai-engineer)
 
 ## Legal entity
 
