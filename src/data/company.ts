@@ -30,6 +30,13 @@ export const COMPANY = {
   } as CompanyAddress,
   /** Fallback for {@link CONTACT_EMAIL}. Render that, never this. */
   email: 'info@faviens.com',
+  /**
+   * Where applications go. A second address rather than the general one, so a
+   * job ad quoted off-site does not route a CV into the sales inbox. It takes
+   * no environment override: an application address that differs between a
+   * preview build and production sends a candidate's CV nowhere.
+   */
+  applyEmail: 'apply@faviens.com',
 } as const;
 
 /** The registered legal name, `Faviens GmbH`, in every locale. */
@@ -43,6 +50,9 @@ export const LEGAL_NAME = `${COMPANY.name} ${COMPANY.legalForm}`;
  * which is not nullish, so `??` would let the empty value through.
  */
 export const CONTACT_EMAIL: string = import.meta.env.CONTACT_EMAIL || COMPANY.email;
+
+/** The address a job ad tells candidates to write to. */
+export const APPLY_EMAIL: string = COMPANY.applyEmail;
 
 /**
  * Address lines in Swiss postal order. The country name is passed in rather

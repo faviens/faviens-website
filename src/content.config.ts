@@ -103,4 +103,49 @@ const team = defineCollection({
     }),
 });
 
-export const collections = { services, team };
+/*
+ * Open roles. A collection rather than a table in `src/data`, because a job ad
+ * is long-form structured content with a body, and the schema is what stops a
+ * German ad shipping without the English one behind it, or without the facts a
+ * candidate needs before deciding to write.
+ */
+const jobs = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/jobs' }),
+  schema: z.object({
+    title: z.string(),
+    lang: langField,
+    order: z.number(),
+    /** One sentence, used on the careers list and as the meta description. */
+    bluf: z.string(),
+    location: z.string(),
+    employmentType: z.string(),
+    workMode: z.string(),
+    workingLanguage: z.string(),
+    /**
+     * The day the posting went up, as an ISO date. Quoted and kept as a string:
+     * the YAML parser turns an unquoted date-like scalar into a `Date` at the
+     * build machine's timezone, which puts it a day out for half the world.
+     *
+     * There is deliberately no closing date. That one is internal, and this
+     * repository is public.
+     */
+    posted: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    /** schema.org `employmentType`, for the JobPosting structured data. */
+    employmentTypeCode: z.enum(['FULL_TIME', 'PART_TIME', 'CONTRACTOR', 'INTERN']),
+    /**
+     * The recruiting-specific half of the company pitch. The half that is also
+     * true of the company generally lives in `i18n` and is rendered on the
+     * About page from the same strings, so the two cannot drift.
+     */
+    pitch: z.array(z.string()),
+    responsibilities: z.array(z.string()),
+    qualifications: z.array(
+      z.object({
+        title: z.string(),
+        description: z.string(),
+      }),
+    ),
+  }),
+});
+
+export const collections = { services, team, jobs };

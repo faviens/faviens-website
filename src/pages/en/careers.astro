@@ -1,14 +1,29 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseLayout from '~/layouts/BaseLayout.astro';
 import ContactCTA from '~/components/ContactCTA.astro';
 import { t } from '~/i18n';
+import { jobHref } from '~/data/jobs';
 import { CONTACT_EMAIL } from '~/data/company';
 import { PROFILES_DE, PROFILES_EN, EXPECTATIONS_DE, EXPECTATIONS_EN } from '~/data/careers';
 
 const lang = 'en' as const;
 const page = t(lang).servicePages.careers;
+// The role's facts reuse the detail page's own labels rather than restating them.
+const jobLabels = t(lang).jobPage;
 const profiles = { de: PROFILES_DE, en: PROFILES_EN }[lang];
 const expectations = { de: EXPECTATIONS_DE, en: EXPECTATIONS_EN }[lang];
+
+/*
+ * Open roles lead the page, ahead of the standing profiles. Someone who
+ * arrives here because a role was advertised elsewhere should not have to
+ * scroll past four speculative profiles to find the one that is actually open.
+ * The section renders nothing at all when the collection is empty, rather than
+ * an apologetic `no openings right now`, which dates itself the moment it is
+ * true and reads as a closed door when it is not.
+ */
+const openings = await getCollection('jobs', (e) => e.data.lang === lang);
+openings.sort((a, b) => a.data.order - b.data.order);
 ---
 
 <BaseLayout title={page.title} description={page.lead} lang={lang}>
@@ -26,9 +41,68 @@ const expectations = { de: EXPECTATIONS_DE, en: EXPECTATIONS_EN }[lang];
     </div>
   </section>
 
+  {
+    openings.length > 0 && (
+      <section class="px-6 md:px-10 py-20 md:py-28 border-t border-hair">
+        <div class="mx-auto max-w-(--container-content)">
+          <p class="lockup text-accent-d">{page.openRolesHeading}</p>
+          {/*
+            No numeral in the left column, and no left column. The profiles
+            below are a numbered list, and an open role set as `01` above them
+            read as the first item of that same list, which is the one thing a
+            reader must not conclude: a role that is actually open and a
+            standing description of a discipline are different kinds of thing.
+            The role is set full width and larger instead, so the difference is
+            carried by weight rather than by a number.
+          */}
+          {openings.map((opening) => (
+            <article class="mt-12 border-t border-hair pt-10">
+              <h2 class="max-w-[18ch] text-4xl md:text-6xl font-extrabold tracking-[-0.04em] leading-[0.98]">
+                <a href={jobHref(opening)} class="hover:text-accent-d transition-colors">
+                  {opening.data.title}
+                </a>
+              </h2>
+              <p class="mt-8 max-w-(--container-measure) text-lg md:text-xl text-grey leading-relaxed">
+                {opening.data.bluf}
+              </p>
+              <dl class="mt-10 grid gap-x-12 sm:grid-cols-3 max-w-(--container-measure)">
+                {[
+                  { label: jobLabels.employmentLabel, value: opening.data.employmentType },
+                  { label: jobLabels.workModeLabel, value: opening.data.workMode },
+                  { label: jobLabels.locationLabel, value: opening.data.location },
+                ].map((fact) => (
+                  <div class="border-t border-hair py-4">
+                    <dt class="eyebrow text-grey">{fact.label}</dt>
+                    <dd class="mt-2 text-base">{fact.value}</dd>
+                  </div>
+                ))}
+              </dl>
+              <a
+                href={jobHref(opening)}
+                class="mt-10 inline-block text-base font-semibold link-underline hover:text-accent-d transition-colors"
+              >
+                {page.viewRole}
+              </a>
+            </article>
+          ))}
+        </div>
+      </section>
+    )
+  }
+
   <section class="px-6 md:px-10 py-20 md:py-28 border-t border-hair">
     <div class="mx-auto max-w-(--container-content)">
       <p class="lockup text-accent-d">{page.profilesHeading}</p>
+      {
+        /*
+        The lead is load-bearing, not decoration. Four numbered headings under
+        a section that follows the open roles read as four more vacancies
+        unless a sentence says otherwise, so this one says so outright.
+      */
+      }
+      <p class="mt-8 max-w-(--container-measure) text-lg text-grey leading-relaxed">
+        {page.profilesLead}
+      </p>
       <div class="mt-12">
         {
           profiles.map((profile, i) => (

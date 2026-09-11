@@ -20,7 +20,7 @@
  */
 import { getCollection } from 'astro:content';
 import MarkLockup from '~/components/marks/MarkLockup.astro';
-import { getAboutLinks, getHomeHref, getNavGroups, t, type Locale } from '~/i18n';
+import { contactHref, getAboutLinks, getHomeHref, getNavGroups, t, type Locale } from '~/i18n';
 import { isWorkshop, workshopHref } from '~/data/workshops';
 import { hasServiceDetail, serviceDetailHref } from '~/data/service-details';
 
@@ -156,7 +156,7 @@ const panels = groups.map((group) => ({
         </div>
       </div>
 
-      <a href="#kontakt" class="text-sm text-ink/80 hover:text-ink link-underline">
+      <a href={contactHref(lang)} class="text-sm text-ink/80 hover:text-ink link-underline">
         {strings.nav.contact}
       </a>
     </nav>

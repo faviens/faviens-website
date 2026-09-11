@@ -15,6 +15,7 @@ const strings = { de, en } as const;
 const LOCALISED_ROUTES: ReadonlyArray<readonly [string, string]> = [
   ['/impressum', '/en/imprint'],
   ['/datenschutz', '/en/privacy'],
+  ['/kontakt', '/en/contact'],
 ];
 
 export function t(locale: Locale) {
@@ -82,9 +83,24 @@ export function getAboutLinks(locale: Locale) {
   const prefix = locale === 'de' ? '' : '/en';
   return [
     { href: `${prefix}/about`, label: s.nav.about },
-    { href: `${prefix}/team`, label: s.nav.team },
     { href: `${prefix}/careers`, label: s.nav.careers },
   ];
+}
+
+/**
+ * The contact page. It is a route of its own rather than a member of the About
+ * group, because the header already carries a standing `Kontakt` link and two
+ * items under the same word, pointing at different things, is a worse bar than
+ * either arrangement on its own. That link now lands here instead of scrolling
+ * to the closing block, which the page ends with anyway.
+ */
+export function contactHref(locale: Locale): string {
+  return locale === 'de' ? '/kontakt' : '/en/contact';
+}
+
+/** The careers index, which the job pages link back to. */
+export function careersHref(locale: Locale): string {
+  return locale === 'de' ? '/careers' : '/en/careers';
 }
 
 export function servicesHref(locale: Locale): string {

@@ -15,7 +15,7 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-38BDF8?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 
-Static, bilingual (DE / EN) site. Zero JavaScript framework, self-hosted fonts, no third-party tracking. Built with Astro and Tailwind v4, deployed via GitHub Actions to GitHub Pages, served from a custom domain. Fifteen services across three groups, each with its own detail or workshop page, plus about, team and careers, mirrored in both locales.
+Static, bilingual (DE / EN) site. Zero JavaScript framework, self-hosted fonts, no third-party tracking. Built with Astro and Tailwind v4, deployed via GitHub Actions to GitHub Pages, served from a custom domain. Fifteen services across three groups, each with its own detail or workshop page, plus about, contact and careers, the last of which carries the open roles, all mirrored in both locales.
 
 ## Build pipeline
 
@@ -102,6 +102,7 @@ src/
   pages/              .astro routes (DE at /, EN at /en/)
   content/services/   15 services x DE/EN; `track` keys each to a group
   content/team/       one entry per person, plus the portrait
+  content/jobs/       one open role x DE/EN
   layouts/            BaseLayout
   components/         Header, Footer, Hero, ContactCTA, GlobeField,
                       ServiceRow, ServiceDetail, WorkshopDetail, Faq, ...

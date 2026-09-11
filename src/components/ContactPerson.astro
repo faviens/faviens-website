@@ -1,0 +1,96 @@
+---
+/*
+ * The named contact, portrait beside the details.
+ *
+ * Beside rather than stacked, and that is the whole point of the component.
+ * Stacked in a column, one person on a page reads as a roster with a single
+ * row in it, which is exactly the reading the contact page exists to avoid.
+ * Laid out sideways it reads as a card: who to write to, how to reach them,
+ * and the background that makes the answer worth having.
+ *
+ * The address is passed in rather than read here, so the page keeps its single
+ * `CONTACT_EMAIL` import and the component has no opinion about which address
+ * it renders.
+ */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface ContactRow {
+  label: string;
+  value: string;
+  href?: string;
+  external?: boolean;
+}
+
+interface Props {
+  name: string;
+  role: string;
+  photo?: ImageMetadata;
+  portraitLabel: string;
+  backgroundLabel: string;
+  rows: readonly ContactRow[];
+}
+
+const { name, role, photo, portraitLabel, backgroundLabel, rows } = Astro.props;
+---
+
+<div class="grid gap-x-12 gap-y-10 md:grid-cols-[18rem_1fr] items-start">
+  <div class="w-full max-w-[18rem]">
+    {
+      photo ? (
+        <Image src={photo} alt={name} widths={[288, 576]} sizes="18rem" class="w-full" />
+      ) : (
+        <div class="aspect-square border border-hair flex items-end p-4">
+          <span class="lockup text-grey">{portraitLabel}</span>
+        </div>
+      )
+    }
+  </div>
+
+  <div>
+    <h2 class="text-4xl md:text-5xl font-extrabold tracking-[-0.04em] leading-[1.0]">{name}</h2>
+    <p class="mt-3 text-base text-accent-d">{role}</p>
+
+    <dl class="mt-10 border-t border-hair max-w-(--container-measure)">
+      {
+        rows.map((row) => (
+          <div class="grid grid-cols-[7rem_1fr] gap-x-6 border-b border-hair py-3.5">
+            <dt class="eyebrow text-grey pt-1">{row.label}</dt>
+            <dd class="text-base">
+              {row.href ? (
+                <a
+                  href={row.href}
+                  class="link-underline hover:text-accent-d transition-colors"
+                  {...(row.external ? { rel: 'noopener noreferrer', target: '_blank' } : {})}
+                >
+                  {row.value}
+                </a>
+              ) : (
+                row.value
+              )}
+            </dd>
+          </div>
+        ))
+      }
+    </dl>
+
+    <p class="mt-12 lockup text-grey">{backgroundLabel}</p>
+    <div class="mt-5 contact-background max-w-(--container-measure)">
+      <slot />
+    </div>
+  </div>
+</div>
+
+<style>
+  /* The background is authored as a markdown list. Preflight strips the marker,
+     so the rule below turns it into the hairline rows the rest of the site
+     uses rather than leaving it as loose lines. */
+  .contact-background :global(ul) {
+    border-top: 1px solid var(--color-hair);
+  }
+  .contact-background :global(li) {
+    border-bottom: 1px solid var(--color-hair);
+    padding-block: 0.875rem;
+    line-height: 1.6;
+  }
+</style>

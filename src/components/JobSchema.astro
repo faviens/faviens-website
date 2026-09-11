@@ -1,0 +1,76 @@
+---
+/*
+ * `JobPosting` and `BreadcrumbList` for an open role.
+ *
+ * The posting is what job aggregators and Google's job search read, so the
+ * fields they require are the ones the frontmatter is shaped around:
+ * `datePosted`, `hiringOrganization`, `jobLocation`. `validThrough` is
+ * deliberately absent: the closing date is internal. An aggregator therefore
+ * treats the posting as open until it disappears, so deleting the entry is
+ * what closes the role. See AGENTS.md.
+ *
+ * The origin is read back from `Astro.site` through `siteOrigin`, never from
+ * `SITE_URL` again: the config has already applied the fallback, and a second
+ * read is a second fallback that drifts from the first.
+ */
+import { COMPANY, LEGAL_NAME } from '~/data/company';
+import { siteOrigin } from '~/data/site';
+
+interface Props {
+  title: string;
+  description: string;
+  /** ISO date the posting went up, and the last day it accepts applications. */
+  datePosted: string;
+  employmentTypeCode: string;
+  careersHref: string;
+  careersLabel: string;
+}
+
+const { title, description, datePosted, employmentTypeCode, careersHref, careersLabel } =
+  Astro.props;
+
+const SITE = siteOrigin(Astro.site).origin;
+const pageUrl = `${SITE}${Astro.url.pathname}`;
+
+const posting = {
+  '@context': 'https://schema.org',
+  '@type': 'JobPosting',
+  '@id': `${pageUrl}#jobposting`,
+  title,
+  description,
+  url: pageUrl,
+  datePosted,
+  employmentType: employmentTypeCode,
+  directApply: true,
+  hiringOrganization: {
+    '@id': `${SITE}/#organization`,
+    '@type': 'Organization',
+    name: LEGAL_NAME,
+    url: SITE,
+  },
+  // No `jobLocationType`/`applicantLocationRequirements`: both are the remote
+  // signal, and a hybrid role that claims them is listed as fully remote.
+  jobLocation: {
+    '@type': 'Place',
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: COMPANY.address.street,
+      postalCode: COMPANY.address.postalCode,
+      addressLocality: COMPANY.address.city,
+      addressCountry: COMPANY.address.countryCode,
+    },
+  },
+};
+
+const breadcrumb = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: careersLabel, item: `${SITE}${careersHref}` },
+    { '@type': 'ListItem', position: 2, name: title, item: pageUrl },
+  ],
+};
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(posting)} is:inline />
+<script type="application/ld+json" set:html={JSON.stringify(breadcrumb)} is:inline />
