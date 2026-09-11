@@ -17,12 +17,15 @@
  *
  * The panels open on hover and on focus-within, so they need no JavaScript and
  * stay reachable from the keyboard.
+ *
+ * None of that survives a phone: hover does not exist and the bar has room for
+ * the lockup and the language switcher only. Below `md` the whole tree moves
+ * into `MobileNav`, which renders the same `getNavPanels` tree behind a button.
  */
-import { getCollection } from 'astro:content';
 import MarkLockup from '~/components/marks/MarkLockup.astro';
-import { contactHref, getAboutLinks, getHomeHref, getNavGroups, t, type Locale } from '~/i18n';
-import { isWorkshop, workshopHref } from '~/data/workshops';
-import { hasServiceDetail, serviceDetailHref } from '~/data/service-details';
+import MobileNav from '~/components/MobileNav.astro';
+import { contactHref, getAboutLinks, getHomeHref, t, type Locale } from '~/i18n';
+import { getNavPanels } from '~/data/nav';
 
 interface Props {
   lang: Locale;
@@ -31,31 +34,8 @@ interface Props {
 const { lang } = Astro.props;
 const strings = t(lang);
 const homeHref = getHomeHref(lang);
-const groups = getNavGroups(lang);
 const aboutLinks = getAboutLinks(lang);
-
-const entries = await getCollection('services', (e) => e.data.lang === lang);
-
-/** The detail page a service links to, or nothing where it has none. */
-function hrefFor(track: string): string | undefined {
-  const entry = entries.find((e) => e.data.track === track);
-  if (!entry) return undefined;
-  if (isWorkshop(entry)) return workshopHref(entry);
-  return hasServiceDetail(entry) ? serviceDetailHref(entry) : undefined;
-}
-
-function titleFor(track: string): string {
-  return entries.find((e) => e.data.track === track)?.data.title.replace(/\n/g, ' ') ?? track;
-}
-
-const panels = groups.map((group) => ({
-  ...group,
-  streams: group.streams.map((stream) => ({
-    key: stream.key,
-    label: strings.serviceStreams[stream.key],
-    items: stream.tracks.map((track) => ({ track, title: titleFor(track), href: hrefFor(track) })),
-  })),
-}));
+const panels = await getNavPanels(lang);
 ---
 
 <header
@@ -161,7 +141,15 @@ const panels = groups.map((group) => ({
       </a>
     </nav>
 
-    <slot name="language-switcher" />
+    <div class="flex items-center gap-5">
+      <!-- Below `md` the switcher moves into the menu. Beside a 30px lockup and
+           a menu button it leaves a 320px bar with nothing between the wordmark
+           and the language pair. -->
+      <div class="hidden md:block">
+        <slot name="language-switcher" />
+      </div>
+      <MobileNav lang={lang} panels={panels} aboutLinks={aboutLinks} />
+    </div>
   </div>
 </header>
 
@@ -172,7 +160,8 @@ const panels = groups.map((group) => ({
   }
   header[data-site-header][data-scrolled='true'],
   header[data-site-header]:hover,
-  header[data-site-header]:focus-within {
+  header[data-site-header]:focus-within,
+  header[data-site-header]:has([data-mobile-nav][open]) {
     background-color: color-mix(in oklab, var(--color-paper) 92%, transparent);
     backdrop-filter: saturate(140%) blur(10px);
     -webkit-backdrop-filter: saturate(140%) blur(10px);

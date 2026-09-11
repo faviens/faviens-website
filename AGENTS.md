@@ -119,13 +119,15 @@ src/
   content/jobs/         one open role x DE/EN
   content.config.ts     the collection schemas
   layouts/BaseLayout.astro
-  components/           Hero, Header, Footer, ContactCTA, Section, GlobeField,
-                        PageHeader, LanguageSwitcher, BaseHead, Schema,
-                        LegalPage, ImprintDetails, ServiceRow, ServiceDetail,
-                        WorkshopDetail, ContactPerson, JobDetail, Faq,
-                        ServiceSchema, CourseSchema, JobSchema
+  components/           Hero, Header, MobileNav, Footer, ContactCTA, Section,
+                        GlobeField, PageHeader, LanguageSwitcher, BaseHead,
+                        Schema, LegalPage, ImprintDetails, ServiceRow,
+                        ServiceDetail, WorkshopDetail, ContactPerson,
+                        JobDetail, Faq, ServiceSchema, CourseSchema, JobSchema
   components/marks/     MarkGlobe, MarkWordmark, MarkLockup
   data/service-groups   the three groups and their streams, structure only
+  data/nav.ts           that structure resolved to titles and hrefs, once, for
+                        both the desktop panels and the mobile menu
   data/{workshops,service-details,jobs}.ts  which detail page an entry renders
   data/{faq,careers,cities}.ts         generated FAQs, profiles, workshop cities
   lib/globe.mjs         the mark's geometry, and mt19937.mjs under it
@@ -414,6 +416,35 @@ A service is not named `Products`. Every item in the systems group is a
 bespoke build, so a Products tab would send a reader looking for pricing, a
 demo or a trial that does not exist. That tab becomes right the day there is a
 product behind it.
+
+### The navigation below `md`
+
+The header bar holds the lockup, the tabs and the language switcher, and below
+`md` only the first of those fits. The tabs are also hover panels, and hover
+does not exist on a phone. So below `md` the whole tree moves into
+`MobileNav.astro`, behind one button.
+
+Three things about it are deliberate:
+
+- **It renders the same tree, not a shortened one.** `src/data/nav.ts` builds
+  the groups, streams and services once and both navigations read it. A menu
+  that offers only `Alle Leistungen` makes a phone visitor pay a page load to
+  see what a desktop visitor sees on hover.
+- **It is `<details>` all the way down**, the menu and each group inside it.
+  The open state is then the element's own rather than a class something has to
+  keep in step with, and the menu opens with the script blocked. The script
+  adds the escape key, the scroll lock behind the sheet, and closing on the way
+  past the breakpoint, which is the case that would otherwise leave a rotated
+  phone scroll-locked with nothing on screen to unlock it.
+- **The language switcher moves into the menu**, which is what
+  `variant="row"` on `LanguageSwitcher` is for. Beside a 30px lockup and a menu
+  button it left a 320px bar with two pixels between the wordmark and the
+  language pair, and the lockup cannot give way: 30px is what puts the globe at
+  its 28px floor.
+
+The sheet fills the viewport below the header rather than sizing to its
+content, because a sheet sized to its content shows the page sliding underneath
+the last row.
 
 ## The contact page, which was the team page
 

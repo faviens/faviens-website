@@ -163,8 +163,6 @@ ten accent and ramp triplets in `global.css` and nothing else.
 - The name has **not been cleared as a trade mark**: Swissreg classes 9, 35 and
   42, TMview, WIPO. The company name is registered; the mark is a separate
   question.
-- **No mobile navigation.** The header nav is `md:` and up, and the footer
-  carries legal links only.
 
 ## Deployment
 

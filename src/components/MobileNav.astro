@@ -1,0 +1,215 @@
+---
+/*
+ * The navigation below `md`, where the header bar has room for the lockup and
+ * one button. The tabs are hover panels and hover does not exist on a phone,
+ * so the whole tree moves in here, and the language switcher with it: beside a
+ * 30px lockup and this button it had two pixels of air at 320px, and 30px is
+ * what puts the globe at its 28px floor.
+ *
+ * It renders the same tree the desktop panels render, from `getNavPanels`.
+ * A phone gets the services themselves, not a link to a page that lists them.
+ *
+ * Everything is `<details>`, the menu and each group inside it, so opening and
+ * closing needs no script and the disclosure state is the element's own rather
+ * than something a class has to agree with. The script adds the three things
+ * markup cannot: the escape key, the scroll lock behind the open panel, and
+ * closing on the way past the breakpoint. Without it the menu still opens.
+ */
+import LanguageSwitcher from '~/components/LanguageSwitcher.astro';
+import { contactHref, t, type Locale } from '~/i18n';
+import type { NavPanel } from '~/data/nav';
+
+interface Props {
+  lang: Locale;
+  panels: NavPanel[];
+  aboutLinks: { href: string; label: string }[];
+}
+
+const { lang, panels, aboutLinks } = Astro.props;
+const strings = t(lang);
+
+const rows = [...aboutLinks, { href: contactHref(lang), label: strings.nav.contact }];
+---
+
+<details data-mobile-nav class="md:hidden">
+  <summary class="-mr-2 flex cursor-pointer p-2 text-ink" aria-label={strings.a11y.menu}>
+    <!-- Three rules at the section-rule weight, folding to a cross. -->
+    <svg
+      viewBox="0 0 24 24"
+      width="24"
+      height="24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.25"
+      aria-hidden="true"
+    >
+      <line class="bar bar-top" x1="3" y1="7" x2="21" y2="7"></line>
+      <line class="bar bar-mid" x1="3" y1="12" x2="21" y2="12"></line>
+      <line class="bar bar-bot" x1="3" y1="17" x2="21" y2="17"></line>
+    </svg>
+  </summary>
+
+  <div class="panel fixed inset-x-0 overflow-y-auto overscroll-contain bg-paper">
+    <nav class="px-6 pb-16" aria-label={strings.a11y.menu}>
+      <ul class="divide-y divide-hair border-b border-hair">
+        {
+          panels.map((group) => (
+            <li>
+              <details class="group">
+                <summary class="flex cursor-pointer items-center justify-between gap-4 py-4 text-base">
+                  <span>{group.nav}</span>
+                  <svg
+                    class="chevron flex-none"
+                    viewBox="0 0 24 24"
+                    width="18"
+                    height="18"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.25"
+                    aria-hidden="true"
+                  >
+                    <polyline points="5 9 12 16 19 9" />
+                  </svg>
+                </summary>
+
+                <div class="pb-6">
+                  <p class="max-w-[38ch] text-sm leading-relaxed text-grey">{group.blurb}</p>
+
+                  {group.streams.map((stream) => (
+                    <div class="mt-6">
+                      {group.streams.length > 1 && (
+                        <p class="lockup mb-2 border-b border-hair pb-2 text-grey">
+                          {stream.label}
+                        </p>
+                      )}
+                      <ul>
+                        {stream.items.map((item) => (
+                          <li>
+                            {item.href ? (
+                              <a
+                                href={item.href}
+                                class="block py-2.5 text-base tracking-[-0.01em] text-grey"
+                              >
+                                {item.title}
+                              </a>
+                            ) : (
+                              <span class="block py-2.5 text-base tracking-[-0.01em] text-grey">
+                                {item.title}
+                              </span>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+
+                  <a href={group.href} class="link-underline mt-6 inline-block text-sm">
+                    {strings.nav.allServices}
+                  </a>
+                </div>
+              </details>
+            </li>
+          ))
+        }
+
+        {
+          rows.map((row) => (
+            <li>
+              <a href={row.href} class="block py-4 text-base">
+                {row.label}
+              </a>
+            </li>
+          ))
+        }
+
+        <li>
+          <LanguageSwitcher lang={lang} variant="row" />
+        </li>
+      </ul>
+    </nav>
+  </div>
+</details>
+
+<style>
+  /* The panel hangs off the header's measured height, the same variable the
+     desktop panels and the sticky group rail use, and fills what is left of
+     the viewport: sized to its content it let the page below show through
+     under the last row, which reads as a broken sheet rather than a menu.
+     `dvh` rather than `vh`, because on a phone the two differ by the browser
+     chrome and the difference is exactly the part of the list that would be
+     unreachable. */
+  .panel {
+    top: var(--header-h, 4.75rem);
+    height: calc(100dvh - var(--header-h, 4.75rem));
+  }
+
+  /* Both markers are ours, so the triangle goes. */
+  summary {
+    list-style: none;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .bar {
+    transform-box: view-box;
+    transform-origin: 12px 12px;
+    transition:
+      transform 200ms ease-out,
+      opacity 120ms ease-out;
+  }
+  [data-mobile-nav][open] .bar-top {
+    transform: translateY(5px) rotate(45deg);
+  }
+  [data-mobile-nav][open] .bar-bot {
+    transform: translateY(-5px) rotate(-45deg);
+  }
+  [data-mobile-nav][open] .bar-mid {
+    opacity: 0;
+  }
+
+  .chevron {
+    transition: transform 200ms ease-out;
+  }
+  details[open] > summary .chevron {
+    transform: rotate(180deg);
+  }
+
+  /* The page behind an open menu must not scroll with it. */
+  :global(body[data-nav-open]) {
+    overflow: hidden;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bar,
+    .chevron {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const menu = document.querySelector<HTMLDetailsElement>('[data-mobile-nav]');
+
+  if (menu) {
+    const summary = menu.querySelector('summary');
+
+    menu.addEventListener('toggle', () => {
+      document.body.toggleAttribute('data-nav-open', menu.open);
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape' || !menu.open) return;
+      menu.open = false;
+      summary?.focus();
+    });
+
+    /* The menu only exists below `md`. Turning a phone into landscape can
+       cross that line while it is open, which would leave the body locked
+       with nothing on screen to unlock it. */
+    const wide = window.matchMedia('(min-width: 48rem)');
+    wide.addEventListener('change', (event) => {
+      if (event.matches) menu.open = false;
+    });
+  }
+</script>
