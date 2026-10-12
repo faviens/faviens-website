@@ -107,6 +107,31 @@ export const DIAMETER_CAPS = 1.34;
 
 /** @typedef {keyof typeof VARIANTS} Variant */
 
+/**
+ * The thinnest a strand may render, in pixels at the size the image is shown.
+ *
+ * Compared by eye on the 62px ball of the photo cover, at its 2x size and at
+ * the 1x size LinkedIn shows: 0.75 kept the strands legible at 1x but packed
+ * them so close at 2x that the ball read as coarse; 0.5 is fine-grained at 2x
+ * and still clearly red, not a pale disc, at 1x. See also the `icon` variant,
+ * the same floor tuned by eye for the site's tab icon.
+ */
+export const MIN_STROKE_PX = 0.5;
+
+/**
+ * The stroke multiplier that keeps the heaviest strand at `MIN_STROKE_PX` when
+ * the ball's ink is `px` wide, never lighter than the logo's own weight of 1.
+ * `scale` is how many times larger the file is than the size it is shown at, so
+ * a 2x banner gets strokes that survive the platform's downscale.
+ *
+ * @param {number} px the ball's ink width in the file, in pixels
+ * @param {number} [scale]
+ */
+export function strokeWeightFor(px, scale = 1) {
+  const ink = 181.235;
+  return Math.max(1, (MIN_STROKE_PX * scale * ink) / (Math.max(...STROKE) * px));
+}
+
 const MAX_OFFSET = 0.55; // max plane offset from centre, as a fraction of R
 const WOBBLE = 0.035; // radial wobble amplitude
 /**
@@ -371,11 +396,13 @@ export function globeArtwork({
  * awkward `9.254 9.246 181.235 181.261` and would otherwise have to be copied
  * into every template that used it and re-copied whenever the variant changed.
  *
- * @param {{ variant?: Variant, colour: string, steps?: number }} options
+ * @param {{ variant?: Variant, colour: string, steps?: number, weight?: number }} options
+ *   `weight` overrides the variant's stroke multiplier
  * @returns {string}
  */
-export function globeGroup({ variant = 'full', colour, steps }) {
-  const { count, weight, steps: variantSteps, flat } = VARIANTS[variant];
+export function globeGroup({ variant = 'full', colour, steps, weight: weightOverride }) {
+  const { count, weight: variantWeight, steps: variantSteps, flat } = VARIANTS[variant];
+  const weight = weightOverride ?? variantWeight;
   const buckets = projectStrands(buildStrands({ count, steps: steps ?? variantSteps }), 0);
   const ink = inkBounds(buckets);
   const span = Math.max(ink.width, ink.height);

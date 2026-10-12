@@ -30,9 +30,11 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
     "@types/node": "^25.8.0",
+    "fontkit": "2.0.4",
     "prettier": "^3.4.2",
     "prettier-plugin-astro": "^0.14.1",
     "sharp": "^0.34.5",
-    "typescript": "^5.7.0"
+    "typescript": "^5.7.0",
+    "wawoff2": "2.0.1"
   }
 }

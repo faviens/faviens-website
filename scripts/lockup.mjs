@@ -41,7 +41,8 @@ const SUPERSAMPLE = 6;
  * has already been spent by the time the ink ends, so it comes off the gap.
  */
 const GAP_CAPS = 0.35;
-const GAP_RATIO = (GAP_CAPS - ((INK_RATIO - 1) / 2) * DIAMETER_CAPS) / (DIAMETER_CAPS * INK_RATIO);
+export const GAP_RATIO =
+  (GAP_CAPS - ((INK_RATIO - 1) / 2) * DIAMETER_CAPS) / (DIAMETER_CAPS * INK_RATIO);
 
 /**
  * The stacked lockup's proportions, in units of the circle's ink width.
@@ -50,8 +51,8 @@ const GAP_RATIO = (GAP_CAPS - ((INK_RATIO - 1) / 2) * DIAMETER_CAPS) / (DIAMETER
  * because anything wider makes the type outweigh the mark: the circle is mostly
  * white space and the type is solid. The 18 is its gap, in the same units.
  */
-const STACK_WORD_RATIO = 1 / INK_RATIO;
-const STACK_GAP_RATIO = 18 / 176 / INK_RATIO;
+export const STACK_WORD_RATIO = 1 / INK_RATIO;
+export const STACK_GAP_RATIO = 18 / 176 / INK_RATIO;
 
 const TRANSPARENT = { r: 0, g: 0, b: 0, alpha: 0 };
 

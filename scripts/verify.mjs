@@ -118,6 +118,18 @@ check('globe matches the logo', () => {
   }
 });
 
+check('logos match their sources', () => {
+  // logos/ is generated but tracked, so it can fall behind its sources without
+  // anything looking wrong. The manifest records what it was made from.
+  try {
+    execSync('node scripts/check-logos.mjs', { cwd: ROOT, stdio: 'pipe' });
+    return {};
+  } catch (error) {
+    const out = `${error.stdout ?? ''}${error.stderr ?? ''}`.trim().split('\n');
+    return { failures: out, hint: 'run pnpm brand and commit logos/' };
+  }
+});
+
 check('formatting', () => {
   try {
     execSync('npx prettier --check .', { cwd: ROOT, stdio: 'pipe' });
