@@ -111,6 +111,7 @@ is the fast variant while iterating.
 public/                 static assets: CNAME, robots.txt, llms.txt,
                         mark.svg and mark-dot.svg (the icons and og.png are
                         generated but gitignored, being binaries)
+logos/                  the logo as SVG and PNG, written by pnpm brand. Tracked
 src/
   pages/                routes. DE at /, EN mirrored under /en/
   content/services/     15 services x DE/EN. `track` keys them to a group
@@ -547,11 +548,13 @@ lists, and the label table that generates a workshop's FAQ from its own
 frontmatter. Splitting either into `i18n` would have meant rewriting the
 phrasing, which the port existed not to do.
 
-### The one tracked binary
+### The tracked binaries
 
-`src/content/team/daniel-vogler.jpg`, 1200px, 82 KB. The repository keeps no
-other binaries: the brand assets are generated into a gitignored directory and
-the icons are generated at build. A portrait cannot be generated, and Astro's
+`src/content/team/daniel-vogler.jpg`, 1200px, 82 KB, and the logos and photo
+banners in `logos/`. The repository keeps no other binaries: the icons are
+generated at build. The logos are tracked so the
+public logo can be downloaded from the repository, not only regenerated on a
+machine that has the toolchain. A portrait cannot be generated, and Astro's
 image pipeline needs the source. It is downscaled from a 2.4 MB original
 before committing, because git history is forever.
 
@@ -616,25 +619,41 @@ value through.
 
 ## Off-site brand assets
 
-`pnpm brand` writes five files into `brand/`, which is gitignored, and two more
-when a photograph is supplied:
+`pnpm brand` writes everything into `logos/`, which is tracked. `brand/` stays
+gitignored for local source material and nothing writes to it.
 
-| File                               | For                                     |
-| ---------------------------------- | --------------------------------------- |
-| `faviens-workspace-320x132`        | the Google Workspace custom logo        |
-| `faviens-linkedin-400x400`         | the LinkedIn company logo, circle alone |
-| `faviens-linkedin-400x400-stacked` | the same tile with the name under it    |
-| `faviens-linkedin-cover-1128x191`  | the LinkedIn company page cover         |
-| `faviens-linkedin-banner-1584x396` | a LinkedIn personal profile banner      |
+The SVGs are the masters, for print, slides and anything that takes a vector:
+`faviens-logo`, `faviens-logo-stacked` and `faviens-mark`, each transparent and
+with a `-paper` ground. The wordmark in them is outlined, so they need no font.
+The PNGs are sized for a destination:
 
-A photograph banner is rendered too, but only when one is pointed at:
+| File                                   | For                                    |
+| -------------------------------------- | -------------------------------------- |
+| `faviens-workspace-320x132`            | the Google Workspace custom logo       |
+| `faviens-workspace-320x132-paper`      | the same on paper, not transparent     |
+| `faviens-logo-1280x528`                | the horizontal logo at 4x, transparent |
+| `faviens-logo-1280x528-paper`          | the same on paper                      |
+| `faviens-logo-stacked-1600x1600`       | the name under the circle, transparent |
+| `faviens-logo-stacked-1600x1600-paper` | the same on paper                      |
+| `faviens-mark-1600x1600`               | the circle alone, for square avatars   |
+| `faviens-mark-1600x1600-paper`         | the same on paper                      |
+| `faviens-cover-2256x382`               | a company page cover, at 2x LinkedIn's |
+| `faviens-banner-3168x792`              | a profile banner, at 2x LinkedIn's     |
+
+The photo banner and cover, `faviens-photo-banner-3168x792` and
+`faviens-photo-cover-2256x382`, are rendered at twice LinkedIn's size, which
+LinkedIn accepts and scales down; at 1x the ball is too small to stay sharp.
+They are rendered only when a photograph is pointed at, and otherwise left as
+they are. `pnpm brand` never deletes a photo banner, since it cannot remake one
+without the photo:
 
 ```bash
 FAVIENS_PHOTO=~/pictures/alps.jpg pnpm brand
 ```
 
-The source image is deliberately not in the repository: it is a binary, and the
-repository keeps none. `FAVIENS_PHOTO_TREATMENT`, `_HORIZON` and `_HORIZON_AT`
+The source image is deliberately not in the repository, so the manifest cannot
+tell whether the banners are stale: after changing a source, rerun with the
+photo. `FAVIENS_PHOTO_TREATMENT`, `_HORIZON` and `_HORIZON_AT`
 tune it, and `scripts/photo-banner.mjs` explains why there are exactly two
 treatments. The short version is that it is a contrast problem with a measured
 answer: against a background of luminance L, ink letters clear 4.5:1 only above
@@ -660,16 +679,33 @@ The two flat banners are **placed, not fitted**, because LinkedIn draws on top
 of them: the company logo tile sits over the bottom left of the cover, and the
 profile photo over the bottom left of the personal banner, which is also cropped
 tighter on a phone. So the block is anchored to one side with a stated inset and
-held on the vertical centre line. Both sizes are LinkedIn's published ones,
-stable for years but theirs to change.
+held on the vertical centre line. Both are rendered at twice LinkedIn's
+published sizes, which are stable for years but theirs to change.
 
 It removes outputs it no longer produces, scoped to the `faviens-*.png` names it
 writes. A target dropped from the list used to leave its last render sitting in
 an ignored directory with nothing to show it was stale, which is how an avatar
 carrying the previous identity survived the switch to this one.
 
-The directory is gitignored because these are binaries and the repository keeps
-none. Regenerate rather than archive. Sources are `scripts/assets/brand-*.svg`,
+`logos/` is tracked because it is the public logo and should be downloadable
+from the repository. It is generated, so never edit a file there by hand: change
+the source, run `pnpm brand`, and commit the regenerated files with that change.
+`logos/MANIFEST` records a digest of the sources and of every file written, and
+`pnpm verify` fails when either no longer matches. Regenerating in CI and
+comparing bytes would not work: the rasteriser's anti-aliasing is not promised
+to be identical on a Mac and on the runner.
+
+Wherever the ball comes out small, the strands are drawn heavier, so no strand
+renders under 0.5px at the size the file is shown (`strokeWeightFor` in
+`src/lib/globe.mjs`). At the logo's own weight a 53px ball, the Workspace logo's,
+has strands a third of a pixel wide and reads as a pink haze. Large files keep
+the logo's own weight.
+
+The wordmark is outlined from Archivo before anything is drawn
+(`scripts/outline.mjs`), so every output is set in Archivo whatever fonts the
+machine has. The descriptor line on the banners is still drawn as text, since
+it carries a nested `<tspan>` the outliner does not handle.
+Sources are `scripts/assets/brand-*.svg`,
 on the same palette tokens as everything else.
 
 The lockups are **composed from measured parts**, not laid out in SVG, and that
@@ -810,7 +846,7 @@ pnpm verify --skip-build     # same minus the build, for fast iteration
 ```
 
 `scripts/verify.mjs` checks the build and type-check, the generated mark against
-the brand package's artwork of record, prettier cleanliness, em-dashes, generic credential patterns, terms from `.leakwords`, confidential
+the brand package's artwork of record, `logos/` against its sources, prettier cleanliness, em-dashes, generic credential patterns, terms from `.leakwords`, confidential
 paths that are tracked or staged, and German/English parity. It runs in CI on
 every pull request (`.github/workflows/verify.yml`) and again on the deploy
 path, so a red run blocks the merge.

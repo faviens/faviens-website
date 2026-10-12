@@ -28,7 +28,15 @@ import sharp from 'sharp';
 import { paletteFrom } from './tokens.mjs';
 import { resolveTemplate } from './template.mjs';
 import { lockupBlock } from './lockup.mjs';
-import { buildStrands, projectStrands, inkBounds, OPACITY, STROKE } from '../src/lib/globe.mjs';
+import { outlineText } from './outline.mjs';
+import {
+  buildStrands,
+  projectStrands,
+  inkBounds,
+  OPACITY,
+  STROKE,
+  strokeWeightFor,
+} from '../src/lib/globe.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const sourceDir = join(__dirname, 'assets');
@@ -53,15 +61,6 @@ const hex2rgb = (h) => {
   const n = parseInt(h.slice(1), 16);
   return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
 };
-/*
- * Rendered stroke thickness, in pixels, held constant across sizes.
- *
- * The logo's own proportion works out at 0.62px on a 104px ball and shows the
- * most structure, but LinkedIn scales a 1584px banner down on a desktop, and at
- * 0.44px the strands go faint. 0.75 keeps the winding legible after that
- * downscale without the strands closing into a disc.
- */
-const STROKE_PX = 0.75;
 const rgb2hex = (c) => '#' + c.map((v) => Math.round(v).toString(16).padStart(2, '0')).join('');
 
 /**
@@ -83,7 +82,7 @@ const rgb2hex = (c) => '#' + c.map((v) => Math.round(v).toString(16).padStart(2,
 function bakedMark(colour, ground, weight) {
   const strand = hex2rgb(colour);
   const bg = hex2rgb(ground);
-  const b = projectStrands(buildStrands({ steps: 110 }), 0);
+  const b = projectStrands(buildStrands(), 0);
   const k = inkBounds(b);
   const layers = OPACITY.map((o) => rgb2hex(strand.map((v, i) => o * v + (1 - o) * bg[i])));
   // One path per depth, each in its own baked colour, back first.
@@ -119,14 +118,17 @@ export async function photoBanner({
   focus = 0.5,
   horizon,
   horizonAt = 0.55,
+  scale = 1,
 }) {
   const t = TREATMENTS[treatment];
   const shade = { ...palette, ink: palette[t.letters], accent: palette[t.accent] };
 
-  const wordmark = resolveTemplate(
-    await readFile(join(sourceDir, 'brand-wordmark.svg'), 'utf8'),
-    shade,
-    'brand-wordmark.svg',
+  const { svg: wordmark } = await outlineText(
+    resolveTemplate(
+      await readFile(join(sourceDir, 'brand-wordmark.svg'), 'utf8'),
+      shade,
+      'brand-wordmark.svg',
+    ),
   );
   const descriptor = resolveTemplate(
     await readFile(join(sourceDir, 'descriptor.svg'), 'utf8'),
@@ -143,7 +145,7 @@ export async function photoBanner({
    * 104px ball and 0.39px at a 62px one: the same file, and the smaller icon
    * looks like a different, fainter drawing. 0.9px holds at both.
    */
-  const weightFor = (px) => (STROKE_PX * 181) / (1.15 * px);
+  const weightFor = (px) => strokeWeightFor(px, scale);
   const build = (mark) =>
     lockupBlock({
       wordmark,
