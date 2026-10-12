@@ -58,6 +58,8 @@ export interface Strings {
   };
   a11y: {
     skipToContent: string;
+    /** Names the menu button and the navigation it opens, below `md`. */
+    menu: string;
   };
   nav: {
     strategy: string;
@@ -275,6 +277,7 @@ export const de: Strings = {
   },
   a11y: {
     skipToContent: 'Direkt zum Inhalt',
+    menu: 'Menü',
   },
   nav: {
     strategy: 'KI-Strategie',

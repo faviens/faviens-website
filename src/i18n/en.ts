@@ -122,6 +122,7 @@ export const en: Strings = {
   },
   a11y: {
     skipToContent: 'Skip to content',
+    menu: 'Menu',
   },
   nav: {
     strategy: 'AI Strategy',
