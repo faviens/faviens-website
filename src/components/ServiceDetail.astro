@@ -50,7 +50,7 @@ const faqItems = buildServiceFaq(entry, lang);
   <div class="mx-auto max-w-(--container-content)">
     <p class="lockup text-accent-d">{s.eyebrow} · {groupLabel}</p>
     <h1
-      class="mt-8 max-w-[14ch] text-5xl md:text-8xl font-extrabold tracking-[-0.045em] leading-[0.92]"
+      class="mt-8 max-w-[14ch] text-5xl md:text-8xl font-normal tracking-[-0.02em] leading-[0.92]"
     >
       {title.replace(/\n/g, ' ')}
     </h1>
@@ -92,7 +92,7 @@ const faqItems = buildServiceFaq(entry, lang);
           {approach.map((step, i) => (
             <div class="grid gap-x-8 gap-y-5 md:grid-cols-[6rem_1fr_16rem] items-start border-b border-hair py-10">
               <span
-                class="hidden md:block text-6xl font-extrabold tracking-[-0.05em] text-t0 leading-none"
+                class="hidden md:block text-6xl font-normal tracking-[-0.02em] text-t0 leading-none"
                 aria-hidden="true"
               >
                 {String(i + 1).padStart(2, '0')}

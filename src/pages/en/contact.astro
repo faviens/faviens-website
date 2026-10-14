@@ -47,7 +47,7 @@ function linkedinLabel(url: string): string {
     <div class="mx-auto max-w-(--container-content)">
       <p class="lockup text-accent-d">{page.heading}</p>
       <h1
-        class="mt-8 max-w-[16ch] text-5xl md:text-8xl font-extrabold tracking-[-0.045em] leading-[0.92]"
+        class="mt-8 max-w-[16ch] text-5xl md:text-8xl font-normal tracking-[-0.02em] leading-[0.92]"
       >
         {page.heading}
       </h1>
@@ -66,6 +66,8 @@ function linkedinLabel(url: string): string {
             <ContactPerson
               name={data.name}
               role={data.role}
+              summary={data.summary}
+              career={data.career}
               photo={data.photo}
               portraitLabel={page.portraitLabel}
               backgroundLabel={page.backgroundLabel}

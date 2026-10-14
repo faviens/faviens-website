@@ -98,6 +98,19 @@ const team = defineCollection({
       role: z.string(),
       photo: image().optional(),
       linkedin: z.string().url().optional(),
+      /** One line under the role, setting up the career rows. */
+      summary: z.string().optional(),
+      /** Career rows, newest first: field, role, where and when, what it was. */
+      career: z
+        .array(
+          z.object({
+            area: z.string(),
+            role: z.string(),
+            org: z.string(),
+            detail: z.string(),
+          }),
+        )
+        .default([]),
       order: z.number(),
       lang: langField,
     }),

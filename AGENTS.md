@@ -378,8 +378,9 @@ back.
 
 Two rules the mark depends on:
 
-- The capitals are `text-transform` and never typed literally, or the site gets
-  quoted back as "FAVIENS".
+- The mark's capitals are `text-transform` and never typed literally. Running
+  copy writes the name as FAVIENS; the legal pages and the legal name keep
+  "Faviens GmbH", as registered.
 - The letters are injected as one string rather than mapped in the template. A
   line break between two letter spans is a text node, and a text node is a
   space, so a reformat would otherwise render the mark as "F A V I E N S".

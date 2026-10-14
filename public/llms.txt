@@ -1,4 +1,4 @@
-# Faviens
+# FAVIENS
 
 > Agentic-AI consulting based in Zürich, Switzerland. Three groups of work:
 > strategy and discovery, systems and applications, workshops and upskilling.
