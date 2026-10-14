@@ -22,16 +22,34 @@ interface ContactRow {
   external?: boolean;
 }
 
+interface CareerRow {
+  area: string;
+  role: string;
+  org: string;
+  detail: string;
+}
+
 interface Props {
   name: string;
   role: string;
+  summary?: string;
+  career?: readonly CareerRow[];
   photo?: ImageMetadata;
   portraitLabel: string;
   backgroundLabel: string;
   rows: readonly ContactRow[];
 }
 
-const { name, role, photo, portraitLabel, backgroundLabel, rows } = Astro.props;
+const {
+  name,
+  role,
+  summary,
+  career = [],
+  photo,
+  portraitLabel,
+  backgroundLabel,
+  rows,
+} = Astro.props;
 ---
 
 <div class="grid gap-x-12 gap-y-10 md:grid-cols-[18rem_1fr] items-start">
@@ -48,7 +66,7 @@ const { name, role, photo, portraitLabel, backgroundLabel, rows } = Astro.props;
   </div>
 
   <div>
-    <h2 class="text-4xl md:text-5xl font-extrabold tracking-[-0.04em] leading-[1.0]">{name}</h2>
+    <h2 class="text-4xl md:text-5xl font-normal tracking-[-0.02em] leading-[1.0]">{name}</h2>
     <p class="mt-3 text-base text-accent-d">{role}</p>
 
     <dl class="mt-10 border-t border-hair max-w-(--container-measure)">
@@ -75,22 +93,39 @@ const { name, role, photo, portraitLabel, backgroundLabel, rows } = Astro.props;
     </dl>
 
     <p class="mt-12 lockup text-grey">{backgroundLabel}</p>
-    <div class="mt-5 contact-background max-w-(--container-measure)">
+    {
+      summary && (
+        <p class="mt-5 text-lg text-grey leading-relaxed max-w-(--container-measure)">{summary}</p>
+      )
+    }
+    {
+      career.length > 0 && (
+        <ol class="mt-8 border-t border-hair">
+          {career.map((row) => (
+            <li class="grid gap-x-6 gap-y-1 border-b border-hair py-5 sm:grid-cols-[9rem_1fr]">
+              <p class="text-xl font-bold">{row.area}</p>
+              <div>
+                <p class="text-lg text-grey">
+                  <span class="text-accent-d font-semibold">{row.role}</span>, {row.org}
+                </p>
+                <p class="mt-1.5 text-lg text-grey leading-relaxed">{row.detail}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      )
+    }
+    <div class="mt-8 contact-background max-w-(--container-measure)">
       <slot />
     </div>
   </div>
 </div>
 
 <style>
-  /* The background is authored as a markdown list. Preflight strips the marker,
-     so the rule below turns it into the hairline rows the rest of the site
-     uses rather than leaving it as loose lines. */
-  .contact-background :global(ul) {
-    border-top: 1px solid var(--color-hair);
-  }
-  .contact-background :global(li) {
-    border-bottom: 1px solid var(--color-hair);
-    padding-block: 0.875rem;
+  /* The markdown body is the one sentence that closes the background: what
+     the career rows mean for the reader. Set as a statement, not as a row. */
+  .contact-background :global(p) {
+    font-size: 1.125rem;
     line-height: 1.6;
   }
 </style>

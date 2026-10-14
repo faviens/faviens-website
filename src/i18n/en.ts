@@ -20,12 +20,12 @@ export const en: Strings = {
   },
   pages: {
     home: {
-      title: 'Faviens',
+      title: 'FAVIENS',
       description:
         'Agentic-AI consulting in Zürich. AI, autonomous agents and data analytics, in the cloud or on premises.',
     },
     notFound: {
-      title: '404, Faviens',
+      title: '404, FAVIENS',
       heading: '404',
       lead: 'This page does not exist.',
       back: 'Back to home',
@@ -183,19 +183,19 @@ export const en: Strings = {
   },
   servicePages: {
     services: {
-      title: 'Services, Faviens',
+      title: 'Services, FAVIENS',
       heading: 'Services',
       lead: 'Agentic AI solutions, end-to-end delivery, and workshops.',
     },
     about: {
-      title: 'About, Faviens',
+      title: 'About, FAVIENS',
       heading: 'About',
       lead: 'Swiss consulting for AI · agentic AI · analytics · data.',
       approachHeading: 'Approach',
       approach: [
-        'Faviens is a boutique AI company in Zürich, agentic systems in particular. We work with clients across Switzerland, on the problems that slow their businesses down.',
+        'FAVIENS is a boutique AI company in Zürich, agentic systems in particular. We work with clients across Switzerland, on the problems that slow their businesses down.',
         'We build agentic AI applications on the current edge of what the tooling allows, and run them in production, in the cloud or on premises. Our own operating model is fully agentic, across every part of the company.',
-        "Faviens is led by a team with a decade in ML and AI on one side. On the other, two decades of business and business development experience at some of the world's largest tech companies and at fast-scaling scaleups.",
+        "FAVIENS is led by a team with a decade in ML and AI on one side. On the other, two decades of business and business development experience at some of the world's largest tech companies and at fast-scaling scaleups.",
         'We work in three modes: as a delivery partner for tailored applications, pipelines, and products, as a sparring partner for strategy, roadmap, and internal initiatives, or as a workshop partner training teams in the right practices.',
       ],
       valuesHeading: 'Values',
@@ -210,9 +210,9 @@ export const en: Strings = {
         'The specialisms we staff an engagement from. Which of them a project needs is the first conversation.',
     },
     contact: {
-      title: 'Contact, Faviens',
+      title: 'Contact, FAVIENS',
       heading: 'Contact',
-      lead: 'Your direct line to Faviens, for a first conversation or a concrete request.',
+      lead: 'Your direct line to FAVIENS, for a first conversation or a concrete request.',
       personHeading: 'Your contact',
       emailLabel: 'Email',
       locationLabel: 'Location',
@@ -220,7 +220,7 @@ export const en: Strings = {
       portraitLabel: 'Portrait',
     },
     careers: {
-      title: 'Careers, Faviens',
+      title: 'Careers, FAVIENS',
       heading: 'Careers',
       lead: 'Open roles, and the specialist profiles our services are built on. Speculative applications are welcome.',
       openRolesHeading: 'Open roles',
@@ -235,7 +235,7 @@ export const en: Strings = {
   },
   jobPage: {
     eyebrow: 'Open role',
-    companyHeading: 'About Faviens',
+    companyHeading: 'About FAVIENS',
     roleHeading: 'The role',
     responsibilitiesHeading: 'What you will do',
     qualificationsHeading: 'Qualifications',

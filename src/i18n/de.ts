@@ -175,12 +175,12 @@ export const de: Strings = {
   },
   pages: {
     home: {
-      title: 'Faviens',
+      title: 'FAVIENS',
       description:
         'Beratung für agentische KI in Zürich. KI, autonome Agenten und Data Analytics, in der Cloud oder On-Premises.',
     },
     notFound: {
-      title: '404, Faviens',
+      title: '404, FAVIENS',
       heading: '404',
       lead: 'Diese Seite existiert nicht.',
       back: 'Zur Startseite',
@@ -338,19 +338,19 @@ export const de: Strings = {
   },
   servicePages: {
     services: {
-      title: 'Leistungen, Faviens',
+      title: 'Leistungen, FAVIENS',
       heading: 'Leistungen',
       lead: 'Agentische KI-Lösungen, End-to-End-Delivery und Workshops.',
     },
     about: {
-      title: 'Über uns, Faviens',
+      title: 'Über uns, FAVIENS',
       heading: 'Über uns',
       lead: 'Schweizer Beratung für KI · agentische KI · Analytics · Daten.',
       approachHeading: 'Ansatz',
       approach: [
-        'Faviens ist eine Boutique-KI-Firma in Zürich, spezialisiert auf agentische Systeme. Unsere Kunden sitzen in der ganzen Schweiz. Wir lösen die Probleme, die ihr Geschäft ausbremsen.',
+        'FAVIENS ist eine Boutique-KI-Firma in Zürich, spezialisiert auf agentische Systeme. Unsere Kunden sitzen in der ganzen Schweiz. Wir lösen die Probleme, die ihr Geschäft ausbremsen.',
         'Wir bauen agentische KI-Anwendungen, die ausreizen, was heute technisch möglich ist, und betreiben sie in Produktion, in der Cloud oder on premises. Unser eigenes Betriebsmodell ist in jedem Teil des Unternehmens durchgängig agentisch.',
-        'Faviens wird von einem Team geführt, das auf der einen Seite ein Jahrzehnt in ML und KI mitbringt. Auf der anderen stehen zwei Jahrzehnte Erfahrung in Business und Business Development, bei einigen der weltgrössten Tech-Konzerne und in schnell wachsenden Scale-ups.',
+        'FAVIENS wird von einem Team geführt, das auf der einen Seite ein Jahrzehnt in ML und KI mitbringt. Auf der anderen stehen zwei Jahrzehnte Erfahrung in Business und Business Development, bei einigen der weltgrössten Tech-Konzerne und in schnell wachsenden Scale-ups.',
         'Wir arbeiten in drei Modi: als Delivery-Partner für massgeschneiderte Anwendungen, Pipelines und Produkte, als Sparring-Partner für Strategie, Roadmap und interne Initiativen, oder als Workshop-Partner, der Teams in die richtigen Praktiken einführt.',
       ],
       valuesHeading: 'Werte',
@@ -365,9 +365,9 @@ export const de: Strings = {
         'Die Fachgebiete, aus denen wir ein Mandat besetzen. Welche davon ein Projekt braucht, klären wir im ersten Gespräch.',
     },
     contact: {
-      title: 'Kontakt, Faviens',
+      title: 'Kontakt, FAVIENS',
       heading: 'Kontakt',
-      lead: 'Ihr direkter Draht zu Faviens, für ein erstes Gespräch oder eine konkrete Anfrage.',
+      lead: 'Ihr direkter Draht zu FAVIENS, für ein erstes Gespräch oder eine konkrete Anfrage.',
       personHeading: 'Ihr Ansprechpartner',
       emailLabel: 'E-Mail',
       locationLabel: 'Standort',
@@ -375,7 +375,7 @@ export const de: Strings = {
       portraitLabel: 'Porträt',
     },
     careers: {
-      title: 'Karriere, Faviens',
+      title: 'Karriere, FAVIENS',
       heading: 'Karriere',
       lead: 'Offene Stellen und die Fachprofile, auf denen unsere Leistungen aufbauen. Initiativbewerbungen sind willkommen.',
       openRolesHeading: 'Offene Stellen',
@@ -390,7 +390,7 @@ export const de: Strings = {
   },
   jobPage: {
     eyebrow: 'Offene Stelle',
-    companyHeading: 'Über Faviens',
+    companyHeading: 'Über FAVIENS',
     roleHeading: 'Die Rolle',
     responsibilitiesHeading: 'Aufgaben',
     qualificationsHeading: 'Qualifikationen',
